@@ -152,3 +152,4 @@
 			</#if>
 		</#list>
 	</#if>
+	grinder.statistics.forLastTest.success = 1
