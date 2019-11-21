@@ -7,17 +7,15 @@ import net.grinder.script.GTest
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
-import org.json.JSONArray
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.ngrinder.recorder.RecorderUtils
 
 import static net.grinder.script.Grinder.grinder
 import static org.hamcrest.Matchers.is
 import static org.junit.Assert.assertThat
 import static org.junit.Assert.assertTrue
-
-import org.ngrinder.recorder.RecorderUtils
 
 /**
  * A simple example using the HTTP plugin that shows the retrieval of a
@@ -115,30 +113,5 @@ class Login {
 
         String orderId = returnData.get("data").asJsonObject.get("order_id").asString
         return orderId
-    }
-
-    private void loadData(String paramStr){
-        def json_object = RecorderUtils.parseRequestToJson(paramStr)
-        String path = json_object.getString("path")
-        int hasHead = json_object.getInt("hasHead")
-        JSONArray params = json_object.getJSONArray("paramsList")
-        File file = new File(getClass().protectionDomain.codeSource.location.path+ path)
-        assertTrue(file.exists())
-        //声明n个list存放解析结果
-        Map<String,List<String>> rstMap = new HashMap<>()
-        for(int i=0; i< params.length();i++){
-            rstMap.put(i as String,new ArrayList<String>())
-        }
-        file.eachLine("UTF-8", 1) { line,num ->
-            if(hasHead != 1 && num != 1){
-                String[] str = line.split(',');
-                for(int i=0; i< str.length;i++){
-                    rstMap.get(i as String).add(str[i])
-                }
-            }
-        }
-        for(int i=0;i<params.length();i++){
-            map.put(params.getJSONObject(i).getString("name"), rstMap.get(params.getJSONObject(i).getInt("value")))
-        }
     }
 }

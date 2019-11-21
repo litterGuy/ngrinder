@@ -13,11 +13,17 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 public class TemplateTest {
+
+	@Test
+	public void randomTest(){
+		System.out.println(UUID.randomUUID().toString().replaceAll("-",""));
+	}
 
 	@Test
 	public void test() {
