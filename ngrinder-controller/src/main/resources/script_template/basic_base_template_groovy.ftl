@@ -75,6 +75,11 @@
 		result = request.DELETE("${reqPms.url}")
 	</#if>
 
+		//输出请求返回值
+		grinder.logger.info("----{}----", result.getText())//返回的文本
+		grinder.logger.info("----{}----", result.getStatusCode())//返回的状态码
+		grinder.logger.info("----{}----", result.getEffectiveURI())//返回的url
+		grinder.logger.info("---\n{}---", result)//返回的请求头所有参数
 		//获取出参
 	<#if reqPms.outParamsList?? && reqPms.outParamsList?size != 0>
 		<#list reqPms.outParamsList as outParams>
