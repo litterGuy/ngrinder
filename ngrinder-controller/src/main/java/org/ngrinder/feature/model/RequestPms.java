@@ -8,6 +8,7 @@ import java.util.List;
  * 每个请求
  */
 public class RequestPms {
+	private String funName;//生成的函数名称
 	private int index;//链路顺序
 	//基本设置
 	private int type;//请求类型，0：登陆携带cookies请求；其他待定
@@ -115,5 +116,13 @@ public class RequestPms {
 
 	public void setAssertionList(List<Assertion> assertionList) {
 		this.assertionList = assertionList;
+	}
+
+	public String getFunName() {
+		return funName;
+	}
+
+	public void setFunName(String funName) {
+		this.funName = funName;
 	}
 }

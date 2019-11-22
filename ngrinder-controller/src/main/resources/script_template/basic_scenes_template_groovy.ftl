@@ -108,13 +108,22 @@ class TestRunner {
 
 	@Test
 	public void test(){
-		//循环进行请求生成
-		<#if list?? && list?size != 0>
+		//调用生成的函数
+        <#if list?? && list?size != 0>
             <#list list as reqPms>
-				<#if reqPms.type != 0>
-					<#include "basic_base_template_groovy.ftl"/>
+				<#if reqPms.funName??>
+		${reqPms.funName}()
 				</#if>
-			</#list>
-		</#if>
+            </#list>
+        </#if>
 	}
+
+	//循环进行请求生成
+	<#if list?? && list?size != 0>
+		<#list list as reqPms>
+			<#if reqPms.type != 0>
+	<#include "basic_base_template_groovy.ftl"/>
+			</#if>
+		</#list>
+	</#if>
 }

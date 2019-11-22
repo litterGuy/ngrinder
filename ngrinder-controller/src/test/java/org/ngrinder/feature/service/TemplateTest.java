@@ -21,8 +21,8 @@ import static org.ngrinder.common.util.ExceptionUtils.processException;
 public class TemplateTest {
 
 	@Test
-	public void randomTest(){
-		System.out.println(UUID.randomUUID().toString().replaceAll("-",""));
+	public void randomTest() {
+		System.out.println(UUID.randomUUID().toString().replaceAll("-", ""));
 	}
 
 	@Test
@@ -35,12 +35,23 @@ public class TemplateTest {
 
 		requestPmsList.add(this.getPostLogin());
 		requestPmsList.add(this.getGetReq());
+		requestPmsList.add(this.getGetReq());
+
+		//为了防止生成多个请求时参数名称重复，预先生成函数名称，最后在test内调用
+		for(int i=0; i< requestPmsList.size();i++){
+			if(requestPmsList.get(i).getType() == 0){
+				continue;
+			}
+			requestPmsList.get(i).setFunName("test_"+i);
+		}
+
 
 		Map<String, Object> map = newHashMap();
 		map.put("userName", "admin");
 		map.put("name", testPms.getName());
 		map.put("list", testPms.getRequestPmsList());
 		map.put("fileDataList", testPms.getFileDataList());
+
 		System.out.println(this.getScriptTemplate(map));
 
 	}

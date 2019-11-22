@@ -1,8 +1,10 @@
-
+	<#if reqPms.funName??>
+	public void ${reqPms.funName}(){
+	</#if>
 		//设置header
 		NVPair[] headers = []
 	<#if reqPms.headers?? && reqPms.headers?size != 0>
-	List<NVPair> headerList = new ArrayList<NVPair>()
+		List<NVPair> headerList = new ArrayList<NVPair>()
 		<#list reqPms.headers as header>
 		headerList.add(new NVPair("${header["name"]?j_string}", "${header["value"]?j_string?replace("$", "\\$")}"))
 		</#list>
@@ -79,7 +81,7 @@
 		grinder.logger.info("----{}----", result.getText())//返回的文本
 		grinder.logger.info("----{}----", result.getStatusCode())//返回的状态码
 		grinder.logger.info("----{}----", result.getEffectiveURI())//返回的url
-		grinder.logger.info("---\n{}---", result)//返回的请求头所有参数
+		grinder.logger.info("---{}---", result)//返回的请求头所有参数
 		//获取出参
 	<#if reqPms.outParamsList?? && reqPms.outParamsList?size != 0>
 		<#list reqPms.outParamsList as outParams>
@@ -153,8 +155,12 @@
 		</#list>
 	</#if>
 
-	if (result.statusCode == 301 || result.statusCode == 302) {
-		grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode);
-	} else {
-		assertThat(result.statusCode, is(200));
+		if (result.statusCode == 301 || result.statusCode == 302) {
+			grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode);
+		} else {
+			assertThat(result.statusCode, is(200));
+		}
+
+    <#if reqPms.funName??>
 	}
+	</#if>
