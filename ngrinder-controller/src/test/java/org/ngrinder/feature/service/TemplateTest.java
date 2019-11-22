@@ -98,7 +98,8 @@ public class TemplateTest {
 		requestPms.setUrl("http://192.168.0.11:8080/form_login");
 
 		List<NVPair> headers = new ArrayList<>();
-		headers.add(new NVPair("Content-Type", "application/x-www-form-urlencoded"));
+		headers.add(new NVPair("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"));
+		headers.add(new NVPair("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36"));
 
 		requestPms.setHeaders(headers);
 		requestPms.setContentType("application/x-www-form-urlencoded");

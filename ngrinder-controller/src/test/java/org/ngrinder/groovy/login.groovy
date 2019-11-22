@@ -52,6 +52,7 @@ class Login {
 
         // do login & save to the login info in cookies
         NVPair[] params = [new NVPair("name", "13637478622"), new NVPair("passwd", "NWfp+DwKkvhs6NXTqat7dxq+cogJXoZ2mLPDM8EYIWK6wjNIAzunD6HTeERWfrA4wAil4rNgacsSn8/EVva9X+Orh00pHESCmed7SITrZJlxBWq4gWrgWSix9C1tMQOnvuxFfkP+4IW7Sk9bw2SBZjljfzmRxCx/iwmpYKDcRi0=")];
+        println params.size()
         HTTPResponse res = request.POST("https://sc.jujixiaolongxia.com/api/v1/user/login/login", params);
 
         def json_object = RecorderUtils.parseRequestToJson(new String(res.data))

@@ -76,7 +76,7 @@
     <#elseif reqPms.method == 'DELETE'>
 		result = request.DELETE("${reqPms.url}")
 	</#if>
-
+		grinder.logger.info("----{}----", request.headers)
 		//输出请求返回值
 		grinder.logger.info("----{}----", result.getText())//返回的文本
 		grinder.logger.info("----{}----", result.getStatusCode())//返回的状态码

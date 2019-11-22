@@ -60,7 +60,7 @@ class TestRunner {
 			if(hasHead != 1 || num != 1){
 				String[] str = line.split(',');
 				for(int i=0; i< str.length;i++){
-					rstMap.get(i as String).add(str[i])
+					rstMap.get(i as String).add(str[i].replaceAll('"',''))
 				}
 			}
 		}
@@ -98,6 +98,8 @@ class TestRunner {
             <#assign reqPms = list[0]>
 			<#include "basic_base_template_groovy.ftl"/>
         </#if>
+		def threadContext = HTTPPluginControl.getThreadHTTPClientContext()
+		cookies = CookieModule.listAllCookies(threadContext)
 	}
 
 	@Before
