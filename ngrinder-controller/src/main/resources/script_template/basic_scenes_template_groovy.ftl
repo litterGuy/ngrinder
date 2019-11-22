@@ -26,6 +26,7 @@ import HTTPClient.NVPair
 import static org.junit.Assert.assertTrue
 import org.ngrinder.recorder.RecorderUtils
 import org.json.JSONArray
+import groovy.json.JsonOutput
 
 /**
  * A scenes test
@@ -48,7 +49,7 @@ class TestRunner {
 		String path = json_object.getString("path")
 		int hasHead = json_object.getInt("hasHead")
 		JSONArray params = json_object.getJSONArray("paramsList")
-		File file = new File(Thread.currentThread().getContextClassLoader().getResource(path).getPath())
+		File file = new File(path)
 		assertTrue(file.exists())
 		//声明n个list存放解析结果
 		Map<String,List<String>> rstMap = new HashMap<>()
@@ -56,7 +57,7 @@ class TestRunner {
 			rstMap.put(i as String,new ArrayList<String>())
 		}
 		file.eachLine("UTF-8", 1) { line,num ->
-			if(hasHead != 1 && num != 1){
+			if(hasHead != 1 || num != 1){
 				String[] str = line.split(',');
 				for(int i=0; i< str.length;i++){
 					rstMap.get(i as String).add(str[i])
@@ -64,7 +65,11 @@ class TestRunner {
 			}
 		}
 		for(int i=0;i<params.length();i++){
-			map.put(params.getJSONObject(i).getString("name"), rstMap.get(params.getJSONObject(i).getInt("value")))
+			def vue = rstMap.get(params.getJSONObject(i).getString("value"))
+			if (vue!=null && vue.size() == 1){
+				vue = vue.get(0)
+			}
+			map.put(params.getJSONObject(i).getString("name"), vue)
 		}
 	}
 
@@ -97,7 +102,6 @@ class TestRunner {
 
 	@Before
 	public void before() {
-		request.setHeaders(headers)
 		cookies.each { CookieModule.addCookie(it, HTTPPluginControl.getThreadHTTPClientContext()) }
 		grinder.logger.info("before thread. init headers and cookies");
 	}

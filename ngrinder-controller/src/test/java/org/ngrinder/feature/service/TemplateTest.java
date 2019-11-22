@@ -28,7 +28,7 @@ public class TemplateTest {
 	@Test
 	public void test() {
 		TestPms testPms = new TestPms();
-		testPms.setName("脚本测试生成");
+		testPms.setName("ngrinder login test");
 		testPms.setFileDataList(this.getFileDataList());
 		List<RequestPms> requestPmsList = new ArrayList<>();
 		testPms.setRequestPmsList(requestPmsList);
@@ -66,12 +66,12 @@ public class TemplateTest {
 		FileData fileData = new FileData();
 		fileData.setName("请求参数");
 		fileData.setHasHead(0);
-		fileData.setPath("resources/test/user.csv");
+		fileData.setPath("./resources/test/user.csv");
 
 		List<NVPair> nvPairList = new ArrayList<>();
-		NVPair nvPair = new NVPair("userId", 1 + "");
+		NVPair nvPair = new NVPair("j_username", 0 + "");
 		nvPairList.add(nvPair);
-		NVPair nvPair2 = new NVPair("appId", 2 + "");
+		NVPair nvPair2 = new NVPair("j_password", 1 + "");
 		nvPairList.add(nvPair2);
 		fileData.setParamsList(nvPairList);
 
@@ -84,7 +84,7 @@ public class TemplateTest {
 		requestPms.setIndex(0);
 		requestPms.setType(0);
 		requestPms.setMethod("POST");
-		requestPms.setUrl("http://www.baidu.com");
+		requestPms.setUrl("http://192.168.0.11:8080/form_login");
 
 		List<NVPair> headers = new ArrayList<>();
 		headers.add(new NVPair("Content-Type", "application/x-www-form-urlencoded"));
@@ -94,14 +94,17 @@ public class TemplateTest {
 		requestPms.setBody(null);
 
 		List<NVPair> params = new ArrayList<>();
-		params.add(new NVPair("user_name", "wangw"));
-		params.add(new NVPair("user_pwd", "admin"));
-		params.add(new NVPair("user_placeholder", "${orderId}"));
+		params.add(new NVPair("j_username", "${j_username}"));
+		params.add(new NVPair("j_password", "${j_password}"));
+		params.add(new NVPair("x", "47"));
+		params.add(new NVPair("y", "34"));
+		params.add(new NVPair("native_language", "cn"));
+		params.add(new NVPair("user_timezone", "Asia/Shanghai"));
 
 		requestPms.setParams(params);
 
 		List<OutParams> outParamsList = new ArrayList<>();
-		requestPms.setOutParamsList(outParamsList);
+//		requestPms.setOutParamsList(outParamsList);
 		OutParams outParams = new OutParams();
 		outParams.setName("status");
 		outParams.setIndex(0);
@@ -110,7 +113,7 @@ public class TemplateTest {
 		outParamsList.add(outParams);
 
 		List<Assertion> assertionList = new ArrayList<>();
-		requestPms.setAssertionList(assertionList);
+//		requestPms.setAssertionList(assertionList);
 		Assertion assertion = new Assertion();
 		assertion.setType(1);
 		assertion.setName("code");
@@ -125,7 +128,7 @@ public class TemplateTest {
 		requestPms.setIndex(0);
 		requestPms.setType(1);
 		requestPms.setMethod("GET");
-		requestPms.setUrl("http://www.baidu.com");
+		requestPms.setUrl("http://192.168.0.11:8080/home");
 
 		List<NVPair> headers = new ArrayList<>();
 		headers.add(new NVPair("Content-Type", "application/x-www-form-urlencoded"));
@@ -136,7 +139,7 @@ public class TemplateTest {
 		requestPms.setParams(null);
 
 		List<OutParams> outParamsList = new ArrayList<>();
-		requestPms.setOutParamsList(outParamsList);
+//		requestPms.setOutParamsList(outParamsList);
 		OutParams outParams = new OutParams();
 		outParams.setName("status");
 		outParams.setIndex(0);
@@ -145,7 +148,7 @@ public class TemplateTest {
 		outParamsList.add(outParams);
 
 		List<Assertion> assertionList = new ArrayList<>();
-		requestPms.setAssertionList(assertionList);
+//		requestPms.setAssertionList(assertionList);
 		Assertion assertion = new Assertion();
 		assertion.setType(1);
 		assertion.setName("code");

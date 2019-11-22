@@ -152,4 +152,9 @@
 			</#if>
 		</#list>
 	</#if>
-	grinder.statistics.forLastTest.success = 1
+
+	if (result.statusCode == 301 || result.statusCode == 302) {
+		grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode);
+	} else {
+		assertThat(result.statusCode, is(200));
+	}
