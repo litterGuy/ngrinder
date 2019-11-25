@@ -90,6 +90,7 @@ class Login {
         } else {
             assertThat(result.statusCode, is(200));
         }
+
     }
 
     @Before

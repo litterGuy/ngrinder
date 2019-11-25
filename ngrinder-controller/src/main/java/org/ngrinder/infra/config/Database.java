@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.config;
 
@@ -42,8 +42,8 @@ public enum Database {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			dataSource.setUrl(String.format(getUrlTemplate(),
-					databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
-					StringUtils.trimToEmpty(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION))));
+				databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
+				StringUtils.trimToEmpty(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION))));
 			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
 			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
 		}
@@ -65,6 +65,19 @@ public enum Database {
 				format = format + ";DB_CLOSE_ON_EXIT=FALSE";
 			}
 			dataSource.setUrl(format);
+			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
+			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
+		}
+	},
+	/**
+	 * mysql
+	 */
+	mysql(com.mysql.jdbc.Driver.class, org.hibernate.dialect.MySQL5Dialect.class, "jdbc:mysql://%s?%s") {
+		@Override
+		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
+			dataSource.setUrl(String.format(getUrlTemplate(),
+				databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL),
+				StringUtils.trimToEmpty(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_URL_OPTION))));
 			dataSource.setUsername(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_USERNAME));
 			dataSource.setPassword(databaseProperties.getProperty(DatabaseConfig.PROP_DATABASE_PASSWORD));
 		}
@@ -107,7 +120,7 @@ public enum Database {
 	 * @since 3.1
 	 */
 	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate,
-	         boolean clusterSupport) {
+			 boolean clusterSupport) {
 		this.clusterSupport = clusterSupport;
 		this.dialect = dialect.getCanonicalName();
 		this.jdbcDriverName = jdbcDriver.getCanonicalName();
@@ -145,8 +158,8 @@ public enum Database {
 			}
 		}
 		LOG.error("[FATAL] Database type {} is not supported.\n" +
-				"Please check the ${NGRINDER_HOME}/database.conf.\n "
-				+ "Use H2 instead.", type);
+			"Please check the ${NGRINDER_HOME}/database.conf.\n "
+			+ "Use H2 instead.", type);
 		return H2;
 	}
 
