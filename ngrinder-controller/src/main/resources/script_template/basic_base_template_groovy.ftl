@@ -179,7 +179,7 @@
 				</#list>
 			</#if>
 			sampMap.put("check_result", assertList)
-			sampMap.put("agent", getParam("grinder.consoleHost")+":"+getParam("grinder.consolePort"))
+			sampMap.put("agent", grinder.getProperties().get("grinder.consoleHost").toString()+":"+grinder.getProperties().get("grinder.consolePort").toString())
 			samplingList.add(sampMap)
 		}
 

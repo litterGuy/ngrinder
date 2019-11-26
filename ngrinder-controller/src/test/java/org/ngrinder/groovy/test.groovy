@@ -43,7 +43,7 @@ class Login {
         test = new GTest(1, "login test")
         request = new HTTPRequest()
         test.record(request);
-        getParam("grinder.consoleHost")+":"+getParam("grinder.consolePort")
+        println grinder.getProperties().get("grinder.consoleHost").toString()+":"+grinder.getProperties().get("grinder.consolePort").toString()
         println "before process -------------------------------------"
     }
 
