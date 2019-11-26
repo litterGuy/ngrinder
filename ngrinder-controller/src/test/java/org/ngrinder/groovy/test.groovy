@@ -98,12 +98,5 @@ class Login {
     @AfterProcess
     public static void afterProcess() {
         println "----------------qwe---------------------------"
-        int size = processList.size() / 10 > 0 ? processList.size() / 10 : 1
-
-        List<ConcurrentMap<String, Object>> tmpList = new ArrayList<>()
-
-        for(int i=0;i< processList.size();i++){
-            reservoirSampling(tmpList, processList.get(i),size)
-        }
     }
 }
