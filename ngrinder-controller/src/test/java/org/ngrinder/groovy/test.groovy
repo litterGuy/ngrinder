@@ -1,23 +1,26 @@
 package org.ngrinder.groovy
 
-import static net.grinder.script.Grinder.grinder
-import static org.hamcrest.Matchers.*
-import static org.junit.Assert.*
+import HTTPClient.CookieModule
+import HTTPClient.HTTPResponse
+import HTTPClient.NVPair
 import net.grinder.plugin.http.HTTPPluginControl
 import net.grinder.plugin.http.HTTPRequest
 import net.grinder.script.GTest
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
+import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess
+import net.grinder.scriptengine.groovy.junit.annotation.AfterThread
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
-
 import org.junit.After
-import org.junit.Before;
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import HTTPClient.CookieModule
-import HTTPClient.HTTPResponse
-import HTTPClient.NVPair
+import static net.grinder.script.Grinder.grinder
+import static org.hamcrest.Matchers.is
+import static org.junit.Assert.assertThat
+import static net.grinder.util.GrinderUtils.*
+import static org.junit.Assert.assertTrue
 
 /**
  * A simple example using the HTTP plugin that shows the retrieval of a
@@ -32,6 +35,7 @@ class Login {
     public static GTest test
     public static HTTPRequest request
     public Object cookies = []
+    public static Map<String, Object> samplingMap = new HashMap<>()
 
     @BeforeProcess
     public static void beforeProcess() {
@@ -39,10 +43,13 @@ class Login {
         test = new GTest(1, "login test")
         request = new HTTPRequest()
         test.record(request);
+        getParam("grinder.consoleHost")+":"+getParam("grinder.consolePort")
+        println "before process -------------------------------------"
     }
 
     @BeforeThread
     public void beforeThread() {
+        println "before thread -------------------------------------"
         grinder.statistics.delayReports = true;
 
         // reset to the all cookies
@@ -52,49 +59,13 @@ class Login {
             CookieModule.removeCookie(it, threadContext)
         }
 
-        //如果存在登陆，则先进行登陆操作获取cookies
-        //设置header
-        NVPair[] headers = []
-        List<NVPair> headerList = new ArrayList<NVPair>()
-        headerList.add(new NVPair("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"))
-        headerList.add(new NVPair("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36"))
-        headers = headerList.toArray()
-        request.setHeaders(headers)
-        HTTPResponse result;
-        //设置参数
-        NVPair[] params = []
-        List<NVPair> paramList = new ArrayList<NVPair>()
-        paramList.add(new NVPair("j_username", "admin"))
-        paramList.add(new NVPair("j_password", "admin"))
-        paramList.add(new NVPair("x", "47"))
-        paramList.add(new NVPair("y", "34"))
-        paramList.add(new NVPair("native_language", "cn"))
-        paramList.add(new NVPair("user_timezone", "Asia/Shanghai"))
-        params = paramList.toArray()
-        grinder.logger.info("----{}----", params)
-        String body = null
-        result = request.POST("http://192.168.0.11:8080/form_login", params)
-        grinder.logger.info("----{}----", request.headers)
-        grinder.logger.info("----{}----", request.data)
-        //输出请求返回值
-        grinder.logger.info("----{}----", result.getText())//返回的文本
-        grinder.logger.info("----{}----", result.getStatusCode())//返回的状态码
-        grinder.logger.info("----{}----", result.getEffectiveURI())//返回的url
-        grinder.logger.info("---{}---", result)//返回的请求头所有参数
-        //获取出参
 
-        //检测断言
-
-        if (result.statusCode == 301 || result.statusCode == 302) {
-            grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode);
-        } else {
-            assertThat(result.statusCode, is(200));
-        }
-
+//        assertTrue(false)
     }
 
     @Before
     public void before() {
+        println "before before -------------------------------------"
         // set cookies for login state
         def threadContext = HTTPPluginControl.getThreadHTTPClientContext()
         cookies.each {
@@ -105,12 +76,23 @@ class Login {
 
     @Test
     public void test() {
-        HTTPResponse result = request.GET("http://my.site.com")
-
+        HTTPResponse result = request.GET("http://www.baidu.com")
+        println "----------------------------123------"
         if (result.statusCode == 301 || result.statusCode == 302) {
             grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode);
         } else {
             assertThat(result.statusCode, is(200));
         }
+        assertTrue(false)
+    }
+
+    @AfterThread
+    public void afterThread(){
+        println "----------------abc---------------------------"
+    }
+
+    @AfterProcess
+    public static void afterProcess(){
+        println "----------------qwe---------------------------"
     }
 }

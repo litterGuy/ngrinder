@@ -13,6 +13,8 @@
 		request.setHeaders(headers)
 		HTTPResponse result;
 		//设置参数
+		def sampReqPams = ""
+		def jsonOutput = new JsonOutput()
 	<#if reqPms.method == 'GET'>
 		result = request.GET("${reqPms.url}")
 	<#elseif reqPms.method == 'POST'>
@@ -42,6 +44,11 @@
 			<#assign body = reqPms["body"]>
 		</#if>
 		String body = <#if body??>"${body?j_string?replace("$", "\\$")}"<#else>null</#if>
+		<#if body??>
+		sampReqPams = body
+		<#else>
+		sampReqPams = jsonOutput.toJson(params)
+		</#if>
 		result = request.POST("${reqPms.url}", <#if body??>body.getBytes()<#else>params</#if>)
 	<#elseif reqPms.method == 'PUT'>
 		<#if reqPms.params?? && reqPms.params?size != 0>
@@ -65,13 +72,19 @@
 		paramList.add(new NVPair("${param["name"]?j_string}", pValue_${param.name}.replace("$","\$")))
 			</#list>
 		params = paramList.toArray()
-		def jsonOutput = new JsonOutput()
 		String json = jsonOutput.toJson(params);
 		</#if>
 		<#if reqPms["body"]??>
 			<#assign body = reqPms["body"]>
 		</#if>
 		String body = <#if body??>"${body?j_string?replace("$", "\\$")}"<#else>null</#if>
+
+		<#if body??>
+			sampReqPams = body
+		<#else>
+			sampReqPams = jsonOutput.toJson(params)
+		</#if>
+
 		result = request.PUT("${reqPms.url}", <#if body??>body.getBytes()<#else>json.getBytes()</#if>)
     <#elseif reqPms.method == 'DELETE'>
 		result = request.DELETE("${reqPms.url}")
@@ -110,8 +123,7 @@
 
 			<#elseif outParams.source == 3>
 		//cookie
-		def threadContext = HTTPPluginControl.getThreadHTTPClientContext()
-		Cookie[] cookies = CookieModule.listAllCookies(threadContext)
+		cookies = CookieModule.listAllCookies(threadContext)
 		for(int i=0; i< cookies.size();i++){
 			if(cookies[i].name == ${outParams.resolveExpress }){
 				map.put("${outParams.name }",cookies[i].value);
@@ -124,6 +136,52 @@
 			</#if>
 		</#list>
 	</#if>
+
+		//TODO 随机取样算法，决定本次是否收集请求信息进行发送，暂时按照取模10（10取1的方式）
+		int cur_num = getThreadUniqId()
+		if((cur_num-1) % 10 == 0){
+			Map<String,Object> sampMap = new HashMap<>()
+			sampMap.put("func","${reqPms.apiName}")
+			sampMap.put("http_req_url","${reqPms.url}")
+			sampMap.put("http_req_method","${reqPms.method}")
+			sampMap.put("http_res_status", result.statusCode)
+			sampMap.put("http_req_headers", request.headers)
+			sampMap.put("http_req_body", sampReqPams)
+
+			Map<String, Object> resHeaderMap = new HashMap<>();
+			def resHeaders = result.listHeaders()
+			while (resHeaders.hasMoreElements()) {
+				String hdr = (String) resHeaders.nextElement()
+				resHeaderMap.put(hdr, result.getHeader(hdr))
+			}
+			sampMap.put("http_res_headers", resHeaderMap)
+			sampMap.put("http_res_body", result.text)
+			sampMap.put("timestamp", System.currentTimeMillis())
+			//获取以下参数
+			Map<String, Object> outPamsMap = new HashMap<>();
+			<#if reqPms.outParamsList?? && reqPms.outParamsList?size != 0>
+				<#list reqPms.outParamsList as outParams>
+			outPamsMap.put("${outParams.name }",map.get("${outParams.name }"))
+				</#list>
+			</#if>
+			sampMap.put("export_content", outPamsMap)
+
+			List<Map<String,Object>> assertList = new ArrayList<>()
+			<#if reqPms.assertionList?? && reqPms.assertionList?size != 0>
+			Map<String, Object> assertMap = new HashMap<>();
+				<#list reqPms.assertionList as assertion>
+			assertMap = new HashMap<>();
+			assertMap.put("name","${assertion.name }")
+			assertMap.put("factor","${assertion.factor}")
+			assertMap.put("content","${assertion.content}")
+			assertMap.put("type","${assertion.type}")
+			assertList.add(assertMap)
+				</#list>
+			</#if>
+			sampMap.put("check_result", assertList)
+			sampMap.put("agent", getParam("grinder.consoleHost")+":"+getParam("grinder.consolePort"))
+			samplingList.add(sampMap)
+		}
 
 		//检测断言
 	<#if reqPms.assertionList?? && reqPms.assertionList?size != 0>

@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class RequestPms {
 	private String funName;//生成的函数名称
+	private String apiName;//设置的api名称
 	private int index;//链路顺序
 	//基本设置
 	private int type;//请求类型，0：登陆携带cookies请求；其他待定
@@ -124,5 +125,13 @@ public class RequestPms {
 
 	public void setFunName(String funName) {
 		this.funName = funName;
+	}
+
+	public String getApiName() {
+		return apiName;
+	}
+
+	public void setApiName(String apiName) {
+		this.apiName = apiName;
 	}
 }

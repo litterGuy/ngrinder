@@ -92,6 +92,7 @@ public class TemplateTest {
 
 	private RequestPms getPostLogin() {
 		RequestPms requestPms = new RequestPms();
+		requestPms.setApiName("登陆");
 		requestPms.setIndex(0);
 		requestPms.setType(0);
 		requestPms.setMethod("POST");
@@ -137,6 +138,7 @@ public class TemplateTest {
 
 	private RequestPms getGetReq() {
 		RequestPms requestPms = new RequestPms();
+		requestPms.setApiName("首页获取");
 		requestPms.setIndex(0);
 		requestPms.setType(1);
 		requestPms.setMethod("GET");

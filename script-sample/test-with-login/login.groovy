@@ -1,3 +1,5 @@
+import java.util.concurrent.ConcurrentHashMap
+
 import static net.grinder.script.Grinder.grinder
 import static org.hamcrest.Matchers.*
 import static org.junit.Assert.*
@@ -30,6 +32,7 @@ class Login {
     public static GTest test
     public static HTTPRequest request
     public Object cookies = []
+    public ConcurrentHashmap<String,Object> map = new ConcurrentHashMap<>()
  
     @BeforeProcess
     public static void beforeProcess() {

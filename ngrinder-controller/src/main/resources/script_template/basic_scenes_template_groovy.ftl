@@ -8,6 +8,8 @@ import net.grinder.script.Grinder
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
+import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess
+import net.grinder.scriptengine.groovy.junit.annotation.AfterThread
 import static net.grinder.util.GrinderUtils.*
 import org.junit.Before
 import org.junit.BeforeClass
@@ -17,6 +19,9 @@ import org.junit.runner.RunWith
 import java.util.Date
 import java.util.List
 import java.util.ArrayList
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 import HTTPClient.Cookie
 import HTTPClient.CookieModule
@@ -40,8 +45,15 @@ class TestRunner {
 
 	public static GTest test
 	public static HTTPRequest request
-	public static Cookie[] cookies = []
-	public static Map<String,Object> map = new HashMap<>()
+	public static ConcurrentMap<String,Object> dataMap = new ConcurrentHashMap<>()
+
+	public ConcurrentMap<String,Object> map = new ConcurrentHashMap<>()
+	public Cookie[] cookies = []
+
+	//请求信息和响应结果
+	public static List<ConcurrentMap<String,Object>> processList = new ArrayList<>()
+	public ConcurrentMap<String,Object> samplingMap = new ConcurrentHashMap<>()
+	public List<Map<String,Object>> samplingList = new CopyOnWriteArrayList<>()
 
 	//初始化csv数据
 	public static void loadData(String paramStr){
@@ -69,12 +81,13 @@ class TestRunner {
 			if (vue!=null && vue.size() == 1){
 				vue = vue.get(0)
 			}
-			map.put(params.getJSONObject(i).getString("name"), vue)
+			dataMap.put(params.getJSONObject(i).getString("name"), vue)
 		}
 	}
 
 	@BeforeProcess
 	public static void beforeProcess() {
+		processList = new ArrayList<>()
 		HTTPPluginControl.getConnectionDefaults().timeout = 6000
 		test = new GTest(1, "${name}")
 		request = new HTTPRequest()
@@ -90,6 +103,17 @@ class TestRunner {
 
 	@BeforeThread
 	public void beforeThread() {
+		samplingMap = new ConcurrentHashMap<>()
+		samplingList = new CopyOnWriteArrayList<>()
+		map.putAll(dataMap)
+
+		// reset to the all cookies
+		def threadContext = HTTPPluginControl.getThreadHTTPClientContext()
+		cookies = CookieModule.listAllCookies(threadContext)
+		cookies.each {
+			CookieModule.removeCookie(it, threadContext)
+		}
+
 		test.record(this, "test")
 		grinder.statistics.delayReports=true;
 		grinder.logger.info("before thread.");
@@ -98,7 +122,6 @@ class TestRunner {
             <#assign reqPms = list[0]>
 			<#include "basic_base_template_groovy.ftl"/>
         </#if>
-		def threadContext = HTTPPluginControl.getThreadHTTPClientContext()
 		cookies = CookieModule.listAllCookies(threadContext)
 	}
 
@@ -128,4 +151,20 @@ class TestRunner {
 			</#if>
 		</#list>
 	</#if>
+
+
+	@AfterThread
+	public void afterThread(){
+		samplingMap.put("testId", 1)//TODO 设置需要关联的testid
+		samplingMap.put("sampling", samplingList)
+		processList.add(samplingMap)
+	}
+
+	@AfterProcess
+	public static void afterProcess(){
+		def jsonOutput = new JsonOutput()
+		String json = jsonOutput.toJson(processList);
+		File tmp = new File("E:\\tmp\\req.txt")
+		tmp.append(json)
+	}
 }
