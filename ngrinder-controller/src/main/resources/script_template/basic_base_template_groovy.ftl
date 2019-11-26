@@ -137,51 +137,48 @@
 		</#list>
 	</#if>
 
-		//TODO 随机取样算法，决定本次是否收集请求信息进行发送，暂时按照取模10（10取1的方式）
-		int cur_num = getThreadUniqId()
-		if((cur_num-1) % 10 == 0){
-			Map<String,Object> sampMap = new HashMap<>()
-			sampMap.put("func","${reqPms.apiName}")
-			sampMap.put("http_req_url","${reqPms.url}")
-			sampMap.put("http_req_method","${reqPms.method}")
-			sampMap.put("http_res_status", result.statusCode)
-			sampMap.put("http_req_headers", request.headers)
-			sampMap.put("http_req_body", sampReqPams)
+		//收集参数
+		Map<String,Object> sampMap = new HashMap<>()
+		sampMap.put("func","${reqPms.apiName}")
+		sampMap.put("http_req_url","${reqPms.url}")
+		sampMap.put("http_req_method","${reqPms.method}")
+		sampMap.put("http_res_status", result.statusCode)
+		sampMap.put("http_req_headers", request.headers)
+		sampMap.put("http_req_body", sampReqPams)
 
-			Map<String, Object> resHeaderMap = new HashMap<>();
-			def resHeaders = result.listHeaders()
-			while (resHeaders.hasMoreElements()) {
-				String hdr = (String) resHeaders.nextElement()
-				resHeaderMap.put(hdr, result.getHeader(hdr))
-			}
-			sampMap.put("http_res_headers", resHeaderMap)
-			sampMap.put("http_res_body", result.text)
-			sampMap.put("timestamp", System.currentTimeMillis())
-			//获取以下参数
-			Map<String, Object> outPamsMap = new HashMap<>();
-			<#if reqPms.outParamsList?? && reqPms.outParamsList?size != 0>
-				<#list reqPms.outParamsList as outParams>
-			outPamsMap.put("${outParams.name }",map.get("${outParams.name }"))
-				</#list>
-			</#if>
-			sampMap.put("export_content", outPamsMap)
-
-			List<Map<String,Object>> assertList = new ArrayList<>()
-			<#if reqPms.assertionList?? && reqPms.assertionList?size != 0>
-			Map<String, Object> assertMap = new HashMap<>();
-				<#list reqPms.assertionList as assertion>
-			assertMap = new HashMap<>();
-			assertMap.put("name","${assertion.name }")
-			assertMap.put("factor","${assertion.factor}")
-			assertMap.put("content","${assertion.content}")
-			assertMap.put("type","${assertion.type}")
-			assertList.add(assertMap)
-				</#list>
-			</#if>
-			sampMap.put("check_result", assertList)
-			sampMap.put("agent", grinder.getProperties().get("grinder.consoleHost").toString()+":"+grinder.getProperties().get("grinder.consolePort").toString())
-			samplingList.add(sampMap)
+		Map<String, Object> resHeaderMap = new HashMap<>();
+		def resHeaders = result.listHeaders()
+		while (resHeaders.hasMoreElements()) {
+			String hdr = (String) resHeaders.nextElement()
+			resHeaderMap.put(hdr, result.getHeader(hdr))
 		}
+		sampMap.put("http_res_headers", resHeaderMap)
+		sampMap.put("http_res_body", result.text)
+		sampMap.put("timestamp", System.currentTimeMillis())
+		//获取以下参数
+		Map<String, Object> outPamsMap = new HashMap<>();
+		<#if reqPms.outParamsList?? && reqPms.outParamsList?size != 0>
+			<#list reqPms.outParamsList as outParams>
+		outPamsMap.put("${outParams.name }",map.get("${outParams.name }"))
+			</#list>
+		</#if>
+		sampMap.put("export_content", outPamsMap)
+
+		List<Map<String,Object>> assertList = new ArrayList<>()
+		<#if reqPms.assertionList?? && reqPms.assertionList?size != 0>
+		Map<String, Object> assertMap = new HashMap<>();
+			<#list reqPms.assertionList as assertion>
+		assertMap = new HashMap<>();
+		assertMap.put("name","${assertion.name }")
+		assertMap.put("factor","${assertion.factor}")
+		assertMap.put("content","${assertion.content}")
+		assertMap.put("type","${assertion.type}")
+		assertList.add(assertMap)
+			</#list>
+		</#if>
+		sampMap.put("check_result", assertList)
+		sampMap.put("agent", grinder.getProperties().get("grinder.consoleHost").toString()+":"+grinder.getProperties().get("grinder.consolePort").toString())
+		samplingList.add(sampMap)
 
 		//检测断言
 	<#if reqPms.assertionList?? && reqPms.assertionList?size != 0>

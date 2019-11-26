@@ -16,6 +16,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+import java.util.concurrent.ConcurrentMap
+
 import static net.grinder.script.Grinder.grinder
 import static org.hamcrest.Matchers.is
 import static org.junit.Assert.assertThat
@@ -36,6 +38,7 @@ class Login {
     public static HTTPRequest request
     public Object cookies = []
     public static Map<String, Object> samplingMap = new HashMap<>()
+    public static List<ConcurrentMap<String, Object>> processList = new ArrayList<>()
 
     @BeforeProcess
     public static void beforeProcess() {
@@ -43,8 +46,9 @@ class Login {
         test = new GTest(1, "login test")
         request = new HTTPRequest()
         test.record(request);
-        println grinder.getProperties().get("grinder.consoleHost").toString()+":"+grinder.getProperties().get("grinder.consolePort").toString()
+        println grinder.getProperties().get("grinder.consoleHost").toString() + ":" + grinder.getProperties().get("grinder.consolePort").toString()
         println "before process -------------------------------------"
+        int cur_num = getThreadUniqId()
     }
 
     @BeforeThread
@@ -87,12 +91,19 @@ class Login {
     }
 
     @AfterThread
-    public void afterThread(){
+    public void afterThread() {
         println "----------------abc---------------------------"
     }
 
     @AfterProcess
-    public static void afterProcess(){
+    public static void afterProcess() {
         println "----------------qwe---------------------------"
+        int size = processList.size() / 10 > 0 ? processList.size() / 10 : 1
+
+        List<ConcurrentMap<String, Object>> tmpList = new ArrayList<>()
+
+        for(int i=0;i< processList.size();i++){
+            reservoirSampling(tmpList, processList.get(i),size)
+        }
     }
 }

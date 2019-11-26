@@ -103,10 +103,16 @@ class TestRunner {
 
 	@BeforeThread
 	public void beforeThread() {
+		test.record(this, "test")
+		grinder.statistics.delayReports=true;
+		grinder.logger.info("before thread.");
+	}
+
+	@Before
+	public void before() {
 		samplingMap = new ConcurrentHashMap<>()
 		samplingList = new CopyOnWriteArrayList<>()
 		map.putAll(dataMap)
-
 		// reset to the all cookies
 		def threadContext = HTTPPluginControl.getThreadHTTPClientContext()
 		cookies = CookieModule.listAllCookies(threadContext)
@@ -114,19 +120,13 @@ class TestRunner {
 			CookieModule.removeCookie(it, threadContext)
 		}
 
-		test.record(this, "test")
-		grinder.statistics.delayReports=true;
-		grinder.logger.info("before thread.");
 		//如果存在登陆，则先进行登陆操作获取cookies
-		<#if list?? && list?size != 0 && list[0].type == 0>
+        <#if list?? && list?size != 0 && list[0].type == 0>
             <#assign reqPms = list[0]>
-			<#include "basic_base_template_groovy.ftl"/>
+            <#include "basic_base_template_groovy.ftl"/>
         </#if>
 		cookies = CookieModule.listAllCookies(threadContext)
-	}
 
-	@Before
-	public void before() {
 		cookies.each { CookieModule.addCookie(it, HTTPPluginControl.getThreadHTTPClientContext()) }
 		grinder.logger.info("before thread. init headers and cookies");
 	}
@@ -141,6 +141,9 @@ class TestRunner {
 				</#if>
             </#list>
         </#if>
+		samplingMap.put("testId", 1)//TODO 设置需要关联的testid
+		samplingMap.put("sampling", samplingList)
+		processList.add(samplingMap)
 	}
 
 	//循环进行请求生成
@@ -155,16 +158,36 @@ class TestRunner {
 
 	@AfterThread
 	public void afterThread(){
-		samplingMap.put("testId", 1)//TODO 设置需要关联的testid
-		samplingMap.put("sampling", samplingList)
-		processList.add(samplingMap)
+
 	}
 
 	@AfterProcess
 	public static void afterProcess(){
+		//取样收集，采集10%
+		int size = processList.size() / 10 > 0 ? processList.size() / 10 : 1
+		List<ConcurrentMap<String, Object>> tmpList = new ArrayList<>()
+		for(int i=0;i< processList.size();i++){
+			reservoirSampling(tmpList, processList.get(i),size)
+		}
+
 		def jsonOutput = new JsonOutput()
-		String json = jsonOutput.toJson(processList);
+		String json = jsonOutput.toJson(tmpList);
+		//TODO 发送请求
 		File tmp = new File("E:\\tmp\\req.txt")
 		tmp.append(json)
+	}
+
+	private static void reservoirSampling(List samples, ConcurrentMap<String, Object> sample, int num) {
+		if (samples.size() < num) {
+			//如果集合数量小于样本数量
+			samples.add(sample);
+		} else {
+			Random random = new Random();
+			int i = random.nextInt(num);
+			if (i < num) {
+				//直接用当前样本替换掉之前样本库中的索引为i的样本
+				samples.set(i, sample);
+			}
+		}
 	}
 }
