@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="ngrinder.3.3.1" id="28" dbms="mysql">
+		<validCheckSum/>
+		<comment>add scences table.</comment>
+		<sql>
+			drop table if exists test_pms;
+			create table test_pms(
+			id bigint(20) primary key auto_increment,
+			name varchar(255) not null comment '场景名称',
+			file_data varchar(1024) default null comment '数据源，多文件以;分隔',
+			script_path varchar(255) default null comment '生成脚本地址',
+			pftest_id bigint(20) default null comment 'pftest主键id',
+			ceate_time datetime not null default CURRENT_TIMESTAMP comment '创建时间',
+			update_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+			);
+			drop table if exists request_pms;
+			create table request_pms(
+			id bigint(20) primary key auto_increment,
+			test_pms_id bigint(20) not null comment '场景表id',
+			api_name varchar(127) not null comment '设置的api名称',
+			sort int	not null comment '链路顺序',
+			fun_name varchar(32) default null comment '测试脚本生成的函数名称,可不填由后台生成',
+			type int not null comment '请求类型，0：登陆携带cookies类型；1：普通请求；其他待定',
+			method varchar(32) not null comment '请求方法，0：GET；1：POST；2：PUT；3：DELETE；其余待定',
+			timeout bigint(20) default null comment '超时时间，单位s',
+			url varchar(511) not null comment '请求的url',
+			headers varchar(2047) default null comment '请求头，以json格式存储数据',
+			content_type varchar(127) default null comment '暂时不支持文件上传类型',
+			body varchar(2047) default null comment 'raw类型时的参数，以json格式存储数据',
+			params varchar(2047) default null comment 'x-www-form-urlencode类型时，接收form表单数据，以json格式存储数据',
+			out_params varchar(2047) default null comment '出参设置，list类型，以json格式存储数据',
+			assertion varchar(2047) default null comment '检查点设置，list类型，以json格式存储数据'
+			);
+			drop table if exists samp_result;
+			create table samp_result(
+			id bigint(20) primary key auto_increment,
+			pftest_id bigint(20) not null comment '关联的测试id',
+			req_id bigint(20) not null comment '关联的api请求id',
+			rt int default 0 comment '响应时间',
+			ceate_time datetime not null default CURRENT_TIMESTAMP comment '创建时间',
+			req_content longtext default null comment '整个请求链路',
+			func varchar(127) not null comment '请求的api名称',
+			req_status int not null comment '响应状态'
+			);
+		</sql>
+	</changeSet>
+</databaseChangeLog>
