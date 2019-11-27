@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.model;
 
@@ -109,6 +109,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 */
 	@Expose
 	@Cloneable
+	@Lob
 	@Column(name = "target_hosts")
 	private String targetHosts;
 
@@ -295,10 +296,12 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
-	@Column(name = "running_sample", length = 9990)
+	@Lob
+	@Column(name = "running_sample")
 	private String runningSample;
 
-	@Column(name = "agent_stat", length = 9990)
+	@Lob
+	@Column(name = "agent_stat")
 	private String agentState;
 
 	@Column(name = "monitor_stat", length = 2000)

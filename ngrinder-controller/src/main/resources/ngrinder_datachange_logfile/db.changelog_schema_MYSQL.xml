@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+   
+	<changeSet author="initialDB" id="4" dbms="mysql">
+		<validCheckSum/>
+		<preConditions onFail="MARK_RAN">
+		 	<not>
+            	<tableExists tableName="TAG"/>
+         	</not>
+        </preConditions>
+        <comment>DB initialization.</comment>
+	    <sql>
+			SET FOREIGN_KEY_CHECKS=0;
+
+			-- ----------------------------
+			-- Table structure for AGENT
+			-- ----------------------------
+			DROP TABLE IF EXISTS `AGENT`;
+			CREATE TABLE `AGENT` (
+			`ID` bigint(20) NOT NULL AUTO_INCREMENT,
+			`APPROVED` char(1) NOT NULL,
+			`HOSTNAME` varchar(255) DEFAULT NULL,
+			`IP` varchar(255) DEFAULT NULL,
+			`REGION` varchar(255) DEFAULT NULL,
+			`STATE` varchar(20) DEFAULT NULL,
+			`PORT` int(11) DEFAULT '0',
+			`SYSTEM_STAT` varchar(1000) DEFAULT NULL,
+			`VERSION` varchar(256) DEFAULT '',
+			PRIMARY KEY (`ID`),
+			UNIQUE KEY `CONSTRAINT_3B` (`ID`)
+			) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+			-- ----------------------------
+			-- Table structure for NUSER
+			-- ----------------------------
+			DROP TABLE IF EXISTS `NUSER`;
+			CREATE TABLE `NUSER` (
+			`ID` bigint(20) NOT NULL AUTO_INCREMENT,
+			`CREATED_DATE` datetime DEFAULT NULL,
+			`LAST_MODIFIED_DATE` datetime DEFAULT NULL,
+			`AUTHENTICATION_PROVIDER_CLASS` varchar(255) DEFAULT NULL,
+			`DESCRIPTION` varchar(255) DEFAULT NULL,
+			`EMAIL` varchar(255) DEFAULT NULL,
+			`ENABLED` char(1) NOT NULL DEFAULT 'T',
+			`IS_EXTERNAL` char(1) DEFAULT 'F',
+			`MOBILE_PHONE` varchar(255) DEFAULT NULL,
+			`PASSWORD` varchar(255) DEFAULT NULL,
+			`ROLE_NAME` varchar(255) NOT NULL,
+			`TIMEZONE` varchar(255) DEFAULT NULL,
+			`USER_ID` varchar(255) NOT NULL,
+			`USER_LANGUAGE` varchar(255) DEFAULT NULL,
+			`USER_NAME` varchar(255) DEFAULT NULL,
+			`CREATED_USER` bigint(20) DEFAULT NULL,
+			`LAST_MODIFIED_USER` bigint(20) DEFAULT NULL,
+			PRIMARY KEY (`ID`),
+			UNIQUE KEY `CONSTRAINT_47` (`ID`),
+			UNIQUE KEY `CONSTRAINT_473` (`USER_ID`),
+			KEY `CREATED_USER_INDEX` (`CREATED_USER`),
+			KEY `LAST_MODIFIED_USER_INDEX_NUSER` (`LAST_MODIFIED_USER`)
+			) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+			-- ----------------------------
+			-- Table structure for PERF_TEST
+			-- ----------------------------
+			DROP TABLE IF EXISTS `PERF_TEST`;
+			CREATE TABLE `PERF_TEST` (
+			`ID` bigint(20) NOT NULL AUTO_INCREMENT,
+			`CREATED_DATE` datetime DEFAULT NULL,
+			`LAST_MODIFIED_DATE` datetime DEFAULT NULL,
+			`AGENT_COUNT` int(11) DEFAULT NULL,
+			`DESCRIPTION` varchar(2048) DEFAULT NULL,
+			`DISTRIBUTION_PATH` varchar(255) DEFAULT NULL,
+			`DURATION` bigint(20) DEFAULT NULL,
+			`ERRORS` bigint(20) DEFAULT NULL,
+			`FINISH_TIME` datetime DEFAULT NULL,
+			`IGNORE_SAMPLE_COUNT` int(11) DEFAULT NULL,
+			`RAMP_UP_INIT_COUNT` int(11) DEFAULT NULL,
+			`RAMP_UP_INIT_SLEEP_TIME` int(11) DEFAULT NULL,
+			`LAST_PROGRESS_MESSAGE` varchar(2048) DEFAULT NULL,
+			`MEAN_TEST_TIME` double DEFAULT NULL,
+			`PEAK_TPS` double DEFAULT NULL,
+			`PORT` int(11) DEFAULT NULL,
+			`RAMP_UP_STEP` int(11) DEFAULT NULL,
+			`RAMP_UP_INCREMENT_INTERVAL` int(11) DEFAULT NULL,
+			`PROCESSES` int(11) DEFAULT NULL,
+			`PROGRESS_MESSAGE` varchar(2048) DEFAULT NULL,
+			`RUN_COUNT` int(11) DEFAULT NULL,
+			`SCHEDULED_TIME` datetime DEFAULT NULL,
+			`SCRIPT_NAME` varchar(255) DEFAULT NULL,
+			`SCRIPT_REVISION` bigint(20) DEFAULT NULL,
+			`SEND_MAIL` char(1) DEFAULT 'F',
+			`START_TIME` datetime DEFAULT NULL,
+			`STATUS` varchar(255) DEFAULT NULL,
+			`STOP_REQUEST` char(1) DEFAULT 'F',
+			`TAG_STRING` varchar(255) DEFAULT NULL,
+			`TARGET_HOSTS` longtext DEFAULT NULL,
+			`TEST_COMMENT` varchar(2048) DEFAULT NULL,
+			`TEST_ERROR_CAUSE` varchar(255) DEFAULT NULL,
+			`NAME` varchar(255) DEFAULT NULL,
+			`TEST_TIME_STANDARD_DEVIATION` double DEFAULT NULL,
+			`TESTS` bigint(20) DEFAULT NULL,
+			`THREADS` int(11) DEFAULT NULL,
+			`THRESHOLD` varchar(255) DEFAULT NULL,
+			`TPS` double DEFAULT NULL,
+			`USE_RAMPUP` char(1) DEFAULT NULL,
+			`VUSER_PER_AGENT` int(11) DEFAULT NULL,
+			`CREATED_USER` bigint(20) DEFAULT NULL,
+			`LAST_MODIFIED_USER` bigint(20) DEFAULT NULL,
+			`REGION` varchar(255) DEFAULT NULL,
+			`SAFE_DISTRIBUTION` char(1) DEFAULT 'F',
+			`AGENT_STAT` longtext DEFAULT NULL,
+			`RUNNING_SAMPLE` longtext DEFAULT NULL,
+			`MONITOR_STAT` varchar(2000) DEFAULT NULL,
+			`SAMPLING_INTERVAL` int(11) DEFAULT NULL,
+			`PARAM` varchar(256) DEFAULT '',
+			`RAMP_UP_TYPE` varchar(10) DEFAULT 'PROCESS',
+			PRIMARY KEY (`ID`),
+			UNIQUE KEY `CONSTRAINT_C3` (`ID`),
+			KEY `CREATED_USER_INDEX_PERF_TEST` (`CREATED_USER`),
+			KEY `LAST_MODIFIED_USER_INDEX_PERF_TEST` (`LAST_MODIFIED_USER`),
+			KEY `PERF_TEST_STATUS_INDEX` (`STATUS`),
+			KEY `SCHEDULED_TIME_INDEX` (`SCHEDULED_TIME`)
+			) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+			-- ----------------------------
+			-- Table structure for PERF_TEST_TAG
+			-- ----------------------------
+			DROP TABLE IF EXISTS `PERF_TEST_TAG`;
+			CREATE TABLE `PERF_TEST_TAG` (
+			`PERF_TEST_ID` bigint(20) NOT NULL,
+			`TAG_ID` bigint(20) NOT NULL,
+			PRIMARY KEY (`PERF_TEST_ID`,`TAG_ID`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+			-- ----------------------------
+			-- Table structure for SHARED_USER
+			-- ----------------------------
+			DROP TABLE IF EXISTS `SHARED_USER`;
+			CREATE TABLE `SHARED_USER` (
+			`OWNER_ID` bigint(20) NOT NULL,
+			`FOLLOW_ID` bigint(20) NOT NULL,
+			PRIMARY KEY (`OWNER_ID`,`FOLLOW_ID`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+			-- ----------------------------
+			-- Table structure for SYSTEM_MONITOR
+			-- ----------------------------
+			DROP TABLE IF EXISTS `SYSTEM_MONITOR`;
+			CREATE TABLE `SYSTEM_MONITOR` (
+			`ID` bigint(20) NOT NULL AUTO_INCREMENT,
+			`COLLECT_TIME` bigint(20) DEFAULT NULL,
+			`CPU_USED_PERCENTAGE` double DEFAULT NULL,
+			`FREE_MEMORY` bigint(20) DEFAULT NULL,
+			`IP` varchar(255) DEFAULT NULL,
+			`MONITOR_KEY` varchar(255) DEFAULT NULL,
+			`MESSAGE` varchar(255) DEFAULT NULL,
+			`PORT` int(11) NOT NULL,
+			`SYSTEM` varchar(255) DEFAULT NULL,
+			`TOTAL_MEMORY` bigint(20) DEFAULT NULL,
+			PRIMARY KEY (`ID`),
+			UNIQUE KEY `CONSTRAINT_F1` (`ID`),
+			KEY `COLLECT_TIME_INDEX` (`COLLECT_TIME`),
+			KEY `IP_INDEX` (`IP`),
+			KEY `MONITOR_KEY_INDEX` (`MONITOR_KEY`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+			-- ----------------------------
+			-- Table structure for TAG
+			-- ----------------------------
+			DROP TABLE IF EXISTS `TAG`;
+			CREATE TABLE `TAG` (
+			`ID` bigint(20) NOT NULL AUTO_INCREMENT,
+			`CREATED_DATE` datetime DEFAULT NULL,
+			`LAST_MODIFIED_DATE` datetime DEFAULT NULL,
+			`TAGVALUE` varchar(255) DEFAULT NULL,
+			`CREATED_USER` bigint(20) DEFAULT NULL,
+			`LAST_MODIFIED_USER` bigint(20) DEFAULT NULL,
+			PRIMARY KEY (`ID`),
+			UNIQUE KEY `CONSTRAINT_14` (`ID`),
+			KEY `CREATED_USER_INDEX_TAG` (`CREATED_USER`),
+			KEY `LAST_MODIFIED_USER_INDEX_TAG` (`LAST_MODIFIED_USER`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			SET FOREIGN_KEY_CHECKS=1;
+						   
+    			
+	    </sql>
+    </changeSet>
+</databaseChangeLog>

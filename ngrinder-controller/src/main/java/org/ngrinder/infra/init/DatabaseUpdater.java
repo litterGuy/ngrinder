@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,13 +9,13 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.init;
 
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
-import liquibase.database.core.H2ExTypeConverter;
+import liquibase.database.core.MySQLExTypeConverter;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.database.typeconversion.TypeConverterFactory;
 import liquibase.exception.LiquibaseException;
@@ -24,7 +24,6 @@ import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.sqlgenerator.core.ModifyDataTypeGenerator;
 import liquibase.sqlgenerator.core.RenameColumnGenerator;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DependsOn;
@@ -55,7 +54,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	private Database getDatabase() {
 		try {
 			return DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
-					new JdbcConnection(dataSource.getConnection()));
+				new JdbcConnection(dataSource.getConnection()));
 		} catch (Exception e) {
 			throw processException("Error getting database from " + dataSource.getUrl(), e);
 		}
@@ -74,9 +73,9 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	@PostConstruct
 	public void init() throws Exception {
 		SqlGeneratorFactory.getInstance().register(new LockExDatabaseChangeLogGenerator());
-		TypeConverterFactory.getInstance().register(H2ExTypeConverter.class);
+		TypeConverterFactory.getInstance().register(MySQLExTypeConverter.class);
 		LiquibaseEx liquibase = new LiquibaseEx(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
-				.getClassLoader()), getDatabase());
+			.getClassLoader()), getDatabase());
 		// previous RenameColumnGenerator don't support Cubrid,so remove it and add new Generator
 		SqlGeneratorFactory.getInstance().unregister(RenameColumnGenerator.class);
 		SqlGeneratorFactory.getInstance().register(new RenameColumnExGenerator());
