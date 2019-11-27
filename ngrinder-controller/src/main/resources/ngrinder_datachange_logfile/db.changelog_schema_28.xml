@@ -13,7 +13,7 @@
 			file_data varchar(1024) default null comment '数据源，多文件以;分隔',
 			script_path varchar(255) default null comment '生成脚本地址',
 			pftest_id bigint(20) default null comment 'pftest主键id',
-			ceate_time datetime not null default CURRENT_TIMESTAMP comment '创建时间',
+			create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间',
 			update_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 			);
 			drop table if exists request_pms;
@@ -40,7 +40,7 @@
 			pftest_id bigint(20) not null comment '关联的测试id',
 			req_id bigint(20) not null comment '关联的api请求id',
 			rt int default 0 comment '响应时间',
-			ceate_time datetime not null default CURRENT_TIMESTAMP comment '创建时间',
+			create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间',
 			req_content longtext default null comment '整个请求链路',
 			func varchar(127) not null comment '请求的api名称',
 			req_status int not null comment '响应状态'
