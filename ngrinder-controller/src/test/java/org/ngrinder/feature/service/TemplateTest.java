@@ -72,8 +72,8 @@ public class TemplateTest {
 		}
 	}
 
-	private List<String> getFileDataList() {
-		List<String> list = new ArrayList<>();
+	private List<FileData> getFileDataList() {
+		List<FileData> list = new ArrayList<>();
 
 		FileData fileData = new FileData();
 		fileData.setName("请求参数");
@@ -87,7 +87,7 @@ public class TemplateTest {
 		nvPairList.add(nvPair2);
 		fileData.setParamsList(nvPairList);
 
-		list.add(JsonOutput.toJson(fileData));
+		list.add(fileData);
 		return list;
 	}
 

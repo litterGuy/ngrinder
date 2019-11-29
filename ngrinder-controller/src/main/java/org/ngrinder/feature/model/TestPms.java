@@ -8,7 +8,7 @@ import java.util.List;
 public class TestPms {
 	private String name;//场景名
 	private List<RequestPms> requestPmsList;//请求
-	private List<String> fileDataList;//数据源
+	private List<FileData> fileDataList;//数据源
 
 	public String getName() {
 		return name;
@@ -26,11 +26,11 @@ public class TestPms {
 		this.requestPmsList = requestPmsList;
 	}
 
-	public List<String> getFileDataList() {
+	public List<FileData> getFileDataList() {
 		return fileDataList;
 	}
 
-	public void setFileDataList(List<String> fileDataList) {
+	public void setFileDataList(List<FileData> fileDataList) {
 		this.fileDataList = fileDataList;
 	}
 }
