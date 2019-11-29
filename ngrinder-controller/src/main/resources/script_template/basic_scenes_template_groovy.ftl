@@ -173,8 +173,14 @@ class TestRunner {
 		def jsonOutput = new JsonOutput()
 		String json = jsonOutput.toJson(tmpList);
 		//TODO 发送请求
-		File tmp = new File("E:\\tmp\\req.txt")
-		tmp.append(json)
+		HTTPRequest requestSamp = new HTTPRequest()
+		NVPair[] headers = [
+			new NVPair("Content-Type", "application/json")
+		]
+
+		String sampUrl = "${samplingUrl}"
+
+		request.POST(sampUrl, json.bytes, headers)
 	}
 
 	private static void reservoirSampling(List samples, ConcurrentMap<String, Object> sample, int num) {

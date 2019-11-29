@@ -7,6 +7,8 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import org.junit.Test;
 import org.ngrinder.feature.model.*;
+import org.ngrinder.infra.config.Config;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.StringWriter;
@@ -20,6 +22,9 @@ public class TemplateTest {
 	public void randomTest() {
 		System.out.println(UUID.randomUUID().toString().replaceAll("-", ""));
 	}
+
+	@Autowired
+	private Config config;
 
 	@Test
 	public void test() {
@@ -50,7 +55,9 @@ public class TemplateTest {
 		map.put("list", testPms.getRequestPmsList());
 		//为方便freemarker使用，将object转化成string
 		map.put("fileDataList", this.getFileDataStrList(testPms));
-
+		map.put("samplingUrl", this.getFileDataStrList(testPms));
+		//TODO 从配置文件中获取采样地址
+		config.getControllerProperties().getProperty("controller.samp_url");
 		System.out.println(this.getScriptTemplate(map));
 
 	}
