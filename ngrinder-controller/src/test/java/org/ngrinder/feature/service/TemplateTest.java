@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 public class TemplateTest {
@@ -39,11 +38,11 @@ public class TemplateTest {
 		requestPmsList.add(this.getGetReq());
 
 		//为了防止生成多个请求时参数名称重复，预先生成函数名称，最后在test内调用
-		for(int i=0; i< requestPmsList.size();i++){
-			if(requestPmsList.get(i).getType() == 0){
+		for (int i = 0; i < requestPmsList.size(); i++) {
+			if (requestPmsList.get(i).getType() == 0) {
 				continue;
 			}
-			requestPmsList.get(i).setFunName("test_"+i);
+			requestPmsList.get(i).setFunName("test_" + i);
 		}
 
 		Gson gson = new Gson();
@@ -105,7 +104,7 @@ public class TemplateTest {
 		headers.add(new NVPair("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"));
 		headers.add(new NVPair("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36"));
 
-		requestPms.setHeaders(headers);
+		requestPms.setHeaderList(headers);
 		requestPms.setContentType("application/x-www-form-urlencoded");
 		requestPms.setBody(null);
 
@@ -117,7 +116,7 @@ public class TemplateTest {
 		params.add(new NVPair("native_language", "cn"));
 		params.add(new NVPair("user_timezone", "Asia/Shanghai"));
 
-		requestPms.setParams(params);
+		requestPms.setParamList(params);
 
 		List<OutParams> outParamsList = new ArrayList<>();
 //		requestPms.setOutParamsList(outParamsList);
@@ -151,10 +150,10 @@ public class TemplateTest {
 		List<NVPair> headers = new ArrayList<>();
 		headers.add(new NVPair("Content-Type", "application/x-www-form-urlencoded"));
 
-		requestPms.setHeaders(headers);
+		requestPms.setHeaderList(headers);
 		requestPms.setContentType("application/x-www-form-urlencoded");
 		requestPms.setBody(null);
-		requestPms.setParams(null);
+		requestPms.setParamList(null);
 
 		List<OutParams> outParamsList = new ArrayList<>();
 //		requestPms.setOutParamsList(outParamsList);

@@ -19,18 +19,21 @@ public class RequestPms {
 	private String url;//请求url
 
 	//header设置
-	private List<NVPair> headers;
+	private List<NVPair> headerList;
 
 	//body设置
 	private String contentType;//暂时只支持x-www-form-urlencode和raw
 	private String body;//raw类型时，获取参数json
-	private List<NVPair> params;//x-www-form-urlencode类型时，接收form表单数据
+	private List<NVPair> paramList;//x-www-form-urlencode类型时，接收form表单数据
 
 	//出参设置
 	private List<OutParams> outParamsList;
 
 	//检查点设置
 	private List<Assertion> assertionList;
+
+	public RequestPms() {
+	}
 
 	public int getSort() {
 		return sort;
@@ -72,12 +75,12 @@ public class RequestPms {
 		this.url = url;
 	}
 
-	public List<NVPair> getHeaders() {
-		return headers;
+	public List<NVPair> getHeaderList() {
+		return headerList;
 	}
 
-	public void setHeaders(List<NVPair> headers) {
-		this.headers = headers;
+	public void setHeaderList(List<NVPair> headerList) {
+		this.headerList = headerList;
 	}
 
 	public String getContentType() {
@@ -96,12 +99,12 @@ public class RequestPms {
 		this.body = body;
 	}
 
-	public List<NVPair> getParams() {
-		return params;
+	public List<NVPair> getParamList() {
+		return paramList;
 	}
 
-	public void setParams(List<NVPair> params) {
-		this.params = params;
+	public void setParamList(List<NVPair> paramList) {
+		this.paramList = paramList;
 	}
 
 	public List<OutParams> getOutParamsList() {

@@ -3,9 +3,9 @@
 	</#if>
 		//设置header
 		NVPair[] headers = []
-	<#if reqPms.headers?? && reqPms.headers?size != 0>
+	<#if reqPms.headerList?? && reqPms.headerList?size != 0>
 		List<NVPair> headerList = new ArrayList<NVPair>()
-		<#list reqPms.headers as header>
+		<#list reqPms.headerList as header>
 		headerList.add(new NVPair("${header["name"]?j_string}", "${header["value"]?j_string?replace("$", "\\$")}"))
 		</#list>
 		headers = headerList.toArray()
@@ -18,10 +18,10 @@
 	<#if reqPms.method == 'GET'>
 		result = request.GET("${reqPms.url}")
 	<#elseif reqPms.method == 'POST'>
-		<#if reqPms.params?? && reqPms.params?size != 0>
+		<#if reqPms.paramList?? && reqPms.paramList?size != 0>
 		NVPair[] params = []
 		List<NVPair> paramList = new ArrayList<NVPair>()
-			<#list reqPms.params as param>
+			<#list reqPms.paramList as param>
 		def pValue_${param.name} = "${param.value?j_string?replace("$", "\\$")}"
 		//检测参数中是否含有占位符，如果有从出参集合中获取值
 		if(pValue_${param.name} ==~ /^\$\{.*\}$/){
@@ -51,10 +51,10 @@
 		</#if>
 		result = request.POST("${reqPms.url}", <#if body??>body.getBytes()<#else>params</#if>)
 	<#elseif reqPms.method == 'PUT'>
-		<#if reqPms.params?? && reqPms.params?size != 0>
+		<#if reqPms.paramList?? && reqPms.paramList?size != 0>
 		NVPair[] params = []
 		List<NVPair> paramList = new ArrayList<NVPair>()
-			<#list reqPms.params as param>
+			<#list reqPms.paramList as param>
 		def pValue_${param.name} = "${param.value?j_string?replace("$", "\\$")}"
 		//检测参数中是否含有占位符，如果有从出参集合中获取值
 		if(pValue_${param.name} ==~ /^\$\{.*\}$/){
