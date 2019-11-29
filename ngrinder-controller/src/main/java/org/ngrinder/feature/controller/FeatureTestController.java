@@ -1,6 +1,7 @@
 package org.ngrinder.feature.controller;
 
 import org.ngrinder.common.controller.BaseController;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
@@ -68,4 +69,14 @@ public class FeatureTestController extends BaseController {
 		return getPath(fileEntry.getPath());
 	}
 
+	@Autowired
+	private Config config;
+
+	@RequestMapping(value = "/foo", method = RequestMethod.GET)
+	@ResponseBody
+	public Object foo() {
+		//采样数据发送的地址
+		String url = config.getControllerProperties().getProperty("controller.samp_url");
+		return url;
+	}
 }
