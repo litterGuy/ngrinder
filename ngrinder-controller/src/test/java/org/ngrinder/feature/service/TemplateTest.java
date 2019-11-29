@@ -96,7 +96,7 @@ public class TemplateTest {
 		RequestPms requestPms = new RequestPms();
 		requestPms.setId(11);
 		requestPms.setApiName("登陆");
-		requestPms.setIndex(0);
+		requestPms.setSort(0);
 		requestPms.setType(0);
 		requestPms.setMethod("POST");
 		requestPms.setUrl("http://192.168.0.11:8080/form_login");
@@ -143,7 +143,7 @@ public class TemplateTest {
 		RequestPms requestPms = new RequestPms();
 		requestPms.setId(12);
 		requestPms.setApiName("首页获取");
-		requestPms.setIndex(0);
+		requestPms.setSort(0);
 		requestPms.setType(1);
 		requestPms.setMethod("GET");
 		requestPms.setUrl("http://192.168.0.11:8080/home");

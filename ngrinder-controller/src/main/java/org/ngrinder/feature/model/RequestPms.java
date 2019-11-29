@@ -11,7 +11,7 @@ public class RequestPms {
 	private long id;
 	private String funName;//生成的函数名称
 	private String apiName;//设置的api名称
-	private int index;//链路顺序
+	private int sort;//链路顺序
 	//基本设置
 	private int type;//请求类型，0：登陆携带cookies请求；其他待定
 	private String method;//请求方法，0：GET;1:POST;2:PUT;3:DELETE;
@@ -32,12 +32,12 @@ public class RequestPms {
 	//检查点设置
 	private List<Assertion> assertionList;
 
-	public int getIndex() {
-		return index;
+	public int getSort() {
+		return sort;
 	}
 
-	public void setIndex(int index) {
-		this.index = index;
+	public void setSort(int sort) {
+		this.sort = sort;
 	}
 
 	public int getType() {
