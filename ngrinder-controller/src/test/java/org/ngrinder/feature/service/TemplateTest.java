@@ -1,6 +1,7 @@
 package org.ngrinder.feature.service;
 
 import HTTPClient.NVPair;
+import com.google.gson.Gson;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -45,14 +46,15 @@ public class TemplateTest {
 			requestPmsList.get(i).setFunName("test_"+i);
 		}
 
-
-		Map<String, Object> map = newHashMap();
-		map.put("userName", "admin");
-		map.put("name", testPms.getName());
-		map.put("list", testPms.getRequestPmsList());
-		map.put("fileDataList", testPms.getFileDataList());
-
-		System.out.println(this.getScriptTemplate(map));
+		Gson gson = new Gson();
+		System.out.println(gson.toJson(testPms));
+//		Map<String, Object> map = newHashMap();
+//		map.put("userName", "admin");
+//		map.put("name", testPms.getName());
+//		map.put("list", testPms.getRequestPmsList());
+//		map.put("fileDataList", testPms.getFileDataList());
+//
+//		System.out.println(this.getScriptTemplate(map));
 
 	}
 
