@@ -141,7 +141,7 @@ class TestRunner {
 				</#if>
             </#list>
         </#if>
-		samplingMap.put("testId", 1)//TODO 设置需要关联的testid
+		samplingMap.put("pftestId", grinder.getProperties().get("grinder.test.id").toString())
 		samplingMap.put("sampling", samplingList)
 		processList.add(samplingMap)
 	}
