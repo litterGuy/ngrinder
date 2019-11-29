@@ -156,12 +156,10 @@
 		sampMap.put("http_res_body", result.text)
 		sampMap.put("timestamp", System.currentTimeMillis())
 		//获取以下参数
-		List<Map<String, Object>> outPamsMap = new ArrayList<>();
+		Map<String, Object> outPamsMap = new HashMap<>();
 		<#if reqPms.outParamsList?? && reqPms.outParamsList?size != 0>
 			<#list reqPms.outParamsList as outParams>
-		outPamsMap.add(new HashMap<String, Object>(){{
-				put("${outParams.name }",map.get("${outParams.name }"))
-		}})
+		outPamsMap.put("${outParams.name }",map.get("${outParams.name }"))
 			</#list>
 		</#if>
 		sampMap.put("export_content", outPamsMap)
