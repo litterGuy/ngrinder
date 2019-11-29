@@ -5,16 +5,12 @@ import com.google.gson.Gson;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
-import groovy.json.JsonOutput;
 import org.junit.Test;
 import org.ngrinder.feature.model.*;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.ngrinder.common.util.ExceptionUtils.processException;
 
@@ -45,15 +41,17 @@ public class TemplateTest {
 			requestPmsList.get(i).setFunName("test_" + i);
 		}
 
-		Gson gson = new Gson();
-		System.out.println(gson.toJson(testPms));
-//		Map<String, Object> map = newHashMap();
-//		map.put("userName", "admin");
-//		map.put("name", testPms.getName());
-//		map.put("list", testPms.getRequestPmsList());
-//		map.put("fileDataList", testPms.getFileDataList());
-//
-//		System.out.println(this.getScriptTemplate(map));
+//		Gson gson = new Gson();
+//		System.out.println(gson.toJson(testPms));
+
+		Map<String, Object> map = new HashMap();
+		map.put("userName", "admin");
+		map.put("name", testPms.getName());
+		map.put("list", testPms.getRequestPmsList());
+		//为方便freemarker使用，将object转化成string
+		map.put("fileDataList", this.getFileDataStrList(testPms));
+
+		System.out.println(this.getScriptTemplate(map));
 
 	}
 
@@ -88,6 +86,15 @@ public class TemplateTest {
 		fileData.setParamsList(nvPairList);
 
 		list.add(fileData);
+		return list;
+	}
+
+	private List<String> getFileDataStrList(TestPms testPms) {
+		List<String> list = new ArrayList<>();
+		Gson gson = new Gson();
+		for (int i = 0; i < testPms.getFileDataList().size(); i++) {
+			list.add(gson.toJson(testPms.getFileDataList().get(i)));
+		}
 		return list;
 	}
 

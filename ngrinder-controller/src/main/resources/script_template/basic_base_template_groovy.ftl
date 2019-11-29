@@ -15,6 +15,7 @@
 		//设置参数
 		def sampReqPams = ""
 		def jsonOutput = new JsonOutput()
+		def startTime = System.currentTimeMillis()
 	<#if reqPms.method == 'GET'>
 		result = request.GET("${reqPms.url}")
 	<#elseif reqPms.method == 'POST'>
@@ -84,7 +85,6 @@
 		<#else>
 			sampReqPams = jsonOutput.toJson(params)
 		</#if>
-		def startTime = System.currentTimeMillis()
 		result = request.PUT("${reqPms.url}", <#if body??>body.getBytes()<#else>json.getBytes()</#if>)
     <#elseif reqPms.method == 'DELETE'>
 		result = request.DELETE("${reqPms.url}")
@@ -149,7 +149,7 @@
 		def endTime = System.currentTimeMillis()
 		sampMap.put("rt", endTime - startTime)
 
-		sampMap.put("api_id", "${reqPms.id}")
+		sampMap.put("api_id", ${reqPms.id})
 
 		Map<String, Object> resHeaderMap = new HashMap<>();
 		def resHeaders = result.listHeaders()
