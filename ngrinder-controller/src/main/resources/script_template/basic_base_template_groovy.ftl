@@ -84,7 +84,7 @@
 		<#else>
 			sampReqPams = jsonOutput.toJson(params)
 		</#if>
-
+		def startTime = System.currentTimeMillis()
 		result = request.PUT("${reqPms.url}", <#if body??>body.getBytes()<#else>json.getBytes()</#if>)
     <#elseif reqPms.method == 'DELETE'>
 		result = request.DELETE("${reqPms.url}")
@@ -145,6 +145,11 @@
 		sampMap.put("http_res_status", result.statusCode)
 		sampMap.put("http_req_headers", request.headers)
 		sampMap.put("http_req_body", sampReqPams)
+
+		def endTime = System.currentTimeMillis()
+		sampMap.put("rt", endTime - startTime)
+
+		sampMap.put("api_id", "${reqPms.id}")
 
 		Map<String, Object> resHeaderMap = new HashMap<>();
 		def resHeaders = result.listHeaders()

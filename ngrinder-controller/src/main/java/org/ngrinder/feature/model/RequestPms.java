@@ -8,6 +8,7 @@ import java.util.List;
  * 每个请求
  */
 public class RequestPms {
+	private long id;
 	private String funName;//生成的函数名称
 	private String apiName;//设置的api名称
 	private int index;//链路顺序
@@ -133,5 +134,13 @@ public class RequestPms {
 
 	public void setApiName(String apiName) {
 		this.apiName = apiName;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 }
