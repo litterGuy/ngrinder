@@ -96,6 +96,8 @@
 	<http pattern="/perftest/**/monitor" security="none"/>
 	<http pattern="/perftest/**/graph" security="none"/>
 
+	<http pattern="/feature/**" security="none"/>
+
 	<!-- accessible from no authorized users -->
 	<http pattern="/check/**" security="none"/>
 	<http pattern="/agent/download/**" security="none"/>
@@ -123,7 +125,6 @@
 		<intercept-url pattern="/monitor-properties.map"/>
 		<intercept-url pattern="/agent/**"/>
 		<intercept-url pattern="/user/**"/>
-		<intercept-url pattern="/feature/**"/>
 		<custom-filter ref="basicProcessingFilter" position="BASIC_AUTH_FILTER"/>
 		<custom-filter ref="pluggablePreAuthFilter" position="PRE_AUTH_FILTER"/>
 		<custom-filter ref="ngrinderUserPasswordAuthenticationFilter" position="FORM_LOGIN_FILTER"/>

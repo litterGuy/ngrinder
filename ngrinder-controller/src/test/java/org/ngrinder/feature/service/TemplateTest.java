@@ -56,8 +56,6 @@ public class TemplateTest {
 		//为方便freemarker使用，将object转化成string
 		map.put("fileDataList", this.getFileDataStrList(testPms));
 		map.put("samplingUrl", this.getFileDataStrList(testPms));
-		//TODO 从配置文件中获取采样地址
-		config.getControllerProperties().getProperty("controller.samp_url");
 		System.out.println(this.getScriptTemplate(map));
 
 	}

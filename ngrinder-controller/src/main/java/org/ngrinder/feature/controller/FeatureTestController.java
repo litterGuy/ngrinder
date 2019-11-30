@@ -1,6 +1,8 @@
 package org.ngrinder.feature.controller;
 
+import com.google.gson.Gson;
 import org.ngrinder.common.controller.BaseController;
+import org.ngrinder.feature.model.TestPms;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -10,10 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -36,6 +35,26 @@ public class FeatureTestController extends BaseController {
 	@Autowired
 	private FileEntryService fileEntryService;
 
+
+	/**
+	 * 创建压测脚本，创建测试，执行测试
+	 * 因为场景在ngrinder-sampling中已经生成，所以直接生成并执行测试、不再有保存测试
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/createTest", method = RequestMethod.POST)
+	@ResponseBody
+	public Object createTest(@RequestBody TestPms testPms) {
+		User user = userService.getOne("admin");
+		//1、获取参数，生成脚本
+
+		//2、生成perf_test数据
+		//3、开启执行测试
+
+		Gson gson = new Gson();
+		return gson.toJson(user);
+	}
+
 	/**
 	 * 跳往新建脚本ui界面
 	 * TODO
@@ -47,6 +66,7 @@ public class FeatureTestController extends BaseController {
 
 		return "feature/create";
 	}
+
 
 	/**
 	 * 上传数据文件
