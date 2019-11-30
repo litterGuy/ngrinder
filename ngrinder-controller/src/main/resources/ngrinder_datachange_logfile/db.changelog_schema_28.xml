@@ -13,7 +13,7 @@
 			file_data varchar(1024) default null comment '数据源，多文件以;分隔',
 
 			ignore_sample_count int default 0 comment '忽略取样数量',
-			target_hosts varchar(1000) default null	comment '目标主机(需要在该主机安装monitor，检测执行机器的cpu、内存等)',
+			target_hosts varchar(1000) default null	comment '目标主机(需要在该主机安装monitor，检测执行机器的cpu、内存等)多个,分隔',
 			use_ramp_up	char(1) default 'F' comment 'Ramp-Up可用 值为T或F',
 			ramp_up_type varchar(10) default 'PROCESS' comment 'Ramp-Up类型，值为 process或thread',
 			threshold	varchar(255) not null comment	'The threshold code, R for run count; D for duration',
