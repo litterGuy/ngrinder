@@ -11,8 +11,26 @@
 			id bigint(20) primary key auto_increment,
 			name varchar(255) not null comment '场景名称',
 			file_data varchar(1024) default null comment '数据源，多文件以;分隔',
-			script_path varchar(255) default null comment '生成脚本地址',
-			pftest_id bigint(20) default null comment 'pftest主键id',
+
+			ignore_sample_count int default 0 comment '忽略取样数量',
+			scheduled_time datetime default null comment	'执行test的定时运行时间',
+			target_hosts varchar(1000) default null	comment '目标主机(需要在该主机安装monitor，检测执行机器的cpu、内存等)',
+			use_ramp_up	char(1) default 'F' comment 'Ramp-Up可用 值为T或F',
+			ramp_up_type varchar(10) default 'PROCESS' comment 'Ramp-Up类型，值为 process或thread',
+			threshold	varchar(255) not null comment	'The threshold code, R for run count; D for duration',
+			duration bigint(20) default 0 comment '测试持续时间，单位毫秒',
+			run_count int(11) default 0 comment '测试次数，最大10000',
+			agent_count int(11) not null comment '代理数，最小为1',
+			vuser_per_agent int(11) not null comment '虚拟用户数量',
+			processes int(11) not null comment '进程数',
+			ramp_up_init_count int(11) default 0 comment 'Ramp-Up初始数',
+			ramp_up_init_sleep_time	int(11) default 0 comment	'Ramp-Up初始等待时间,单位毫秒',
+			ramp_up_step int(11) default 0 comment 'Ramp-Up增量',
+			ramp_up_increment_interval int(11) default 0 comment 'Ramp-Up进程增长间隔,单位毫秒',
+			threads	int(11) not null comment '线程数',
+			sampling_interval	int(11) default 2 comment '采样间隔',
+			param varchar(255) default null comment '测试参数,测试脚本可以在命令行里获取参数，目前未实现',
+
 			create_time datetime not null default CURRENT_TIMESTAMP comment '创建时间',
 			update_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 			);
