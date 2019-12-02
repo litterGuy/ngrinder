@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 
-import static org.apache.commons.io.FilenameUtils.getPath;
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.Preconditions.*;
 
 /**
@@ -86,7 +86,10 @@ public class FeatureTestController extends BaseController {
 
 		entry = fileEntryService.prepareNewEntryForScenes(user, path, fileName, name, testPms.getRequestPmsList(), scriptHandler,
 			false, samplingUrl, this.getFileDataStrList(testPms));
-
+		//如果存在targetHosts，那么需要往svn中存储
+		if (StringUtils.isNotEmpty(testPms.getTargetHosts())) {
+			entry.setProperties(buildMap("targetHosts", testPms.getTargetHosts()));
+		}
 		fileEntryService.save(user, entry);
 
 		String basePath = entry.getPath();
@@ -128,20 +131,26 @@ public class FeatureTestController extends BaseController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/uploadData", method = RequestMethod.GET)
+	@RequestMapping(value = "/uploadData", method = RequestMethod.POST)
 	@ResponseBody
-	public String uploadData(User user, @RequestParam("uploadFile") MultipartFile file) {
+	public String uploadData(@RequestParam("uploadFile") MultipartFile file) {
+		User user = userService.getOne("admin");
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(new SecuredUser(user, null), null);
+		SecurityContextImpl context = new SecurityContextImpl();
+		context.setAuthentication(token);
+		SecurityContextHolder.setContext(context);
 
 		//读取文件封装成FileEntry
 		FileEntry fileEntry = new FileEntry();
 		try {
+			//TODO 设置详细信息
 			fileEntry.setContentBytes(file.getBytes());
 			fileEntry.setPath("resources/" + UUID.randomUUID().toString().replaceAll("-", "") + "/user.csv");
 			fileEntryService.save(user, fileEntry);
 		} catch (IOException e) {
 			LOG.error(e.getMessage());
 		}
-		return getPath(fileEntry.getPath());
+		return fileEntry.getPath();
 	}
 
 	private List<String> getFileDataStrList(TestPms testPms) {
