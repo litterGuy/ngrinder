@@ -172,7 +172,7 @@ class TestRunner {
 
 		def jsonOutput = new JsonOutput()
 		String json = jsonOutput.toJson(tmpList);
-		//TODO 发送请求
+		//发送请求
 		HTTPRequest requestSamp = new HTTPRequest()
 		NVPair[] headers = [
 			new NVPair("Content-Type", "application/json")

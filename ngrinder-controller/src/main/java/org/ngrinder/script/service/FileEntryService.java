@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,13 +9,14 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.service;
 
 import org.ngrinder.common.util.PathUtils;
 import org.ngrinder.common.util.ThreadUtils;
 import org.ngrinder.common.util.UrlUtils;
+import org.ngrinder.feature.model.RequestPms;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.handler.ProjectHandler;
@@ -60,7 +61,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 /**
  * File entry service class.
- *
+ * <p>
  * This class is responsible for creating user svn repository whenever a user is
  * created and connect the user to the underlying svn.
  *
@@ -122,7 +123,7 @@ public class FileEntryService {
 
 	/**
 	 * Create user svn repo.
-	 *
+	 * <p>
 	 * This method is executed async way.
 	 *
 	 * @param user newly created user.
@@ -197,7 +198,7 @@ public class FileEntryService {
 
 	/**
 	 * Get single file entity.
-	 *
+	 * <p>
 	 * The return value has content byte.
 	 *
 	 * @param user the user
@@ -239,7 +240,7 @@ public class FileEntryService {
 	/**
 	 * Save File entry.
 	 *
-	 * @param user       the user
+	 * @param user      the user
 	 * @param fileEntry fileEntry to be saved
 	 */
 	public void save(User user, FileEntry fileEntry) {
@@ -305,7 +306,7 @@ public class FileEntryService {
 	 * @return created file entry. main test file if it's the project creation.
 	 */
 	public FileEntry prepareNewEntry(User user, String path, String fileName, String name, String url,
-	                                 ScriptHandler scriptHandler, boolean libAndResource, String options) {
+									 ScriptHandler scriptHandler, boolean libAndResource, String options) {
 		if (scriptHandler instanceof ProjectHandler) {
 			scriptHandler.prepareScriptEnv(user, path, fileName, name, url, libAndResource,
 				loadTemplate(user, getScriptHandler("groovy"), url, name, options));
@@ -323,6 +324,21 @@ public class FileEntryService {
 		return fileEntry;
 	}
 
+	public FileEntry prepareNewEntryForScenes(User user, String path, String fileName, String name, List<RequestPms> requestPmsList,
+											  ScriptHandler scriptHandler, boolean libAndResource, String samplingUrl, List<String> fileDataList) {
+		if (scriptHandler instanceof ProjectHandler) {
+			scriptHandler.prepareScriptEnv(user, path, fileName, name, null, libAndResource,
+				loadScenesTemplate(user, getScriptHandler("groovy"), requestPmsList, name, samplingUrl, fileDataList));
+			return null;
+		}
+		path = PathUtils.join(path, fileName);
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setPath(path);
+		fileEntry.setContent(loadScenesTemplate(user, getScriptHandler("groovy"), requestPmsList, name, samplingUrl, fileDataList));
+		fileEntry.setProperties(new HashMap<String, String>());
+		return fileEntry;
+	}
+
 	/**
 	 * Create new FileEntry for the given URL.
 	 *
@@ -332,7 +348,7 @@ public class FileEntryService {
 	 * @return created new {@link FileEntry}
 	 */
 	public FileEntry prepareNewEntryForQuickTest(User user, String url,
-		ScriptHandler scriptHandler) {
+												 ScriptHandler scriptHandler) {
 		String path = getPathFromUrl(url);
 		String host = UrlUtils.getHost(url);
 		FileEntry quickTestFile = scriptHandler.getDefaultQuickTestFilePath(path);
@@ -342,7 +358,7 @@ public class FileEntryService {
 			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false, nullOptions);
 		} else {
 			FileEntry fileEntry = prepareNewEntry(user, path, quickTestFile.getFileName(), host, url, scriptHandler,
-					false, nullOptions);
+				false, nullOptions);
 			fileEntry.setDescription("Quick test for " + url);
 			save(user, fileEntry);
 		}
@@ -359,13 +375,24 @@ public class FileEntryService {
 	 * @return generated test script
 	 */
 	public String loadTemplate(User user, ScriptHandler handler, String url, String name,
-		String options) {
+							   String options) {
 		Map<String, Object> map = newHashMap();
 		map.put("url", url);
 		map.put("userName", user.getUserName());
 		map.put("name", name);
 		map.put("options", options);
 		return handler.getScriptTemplate(map);
+	}
+
+	public String loadScenesTemplate(User user, ScriptHandler handler, List<RequestPms> requestPmsList, String name,
+									 String samplingUrl, List<String> fileDataList) {
+		Map<String, Object> map = newHashMap();
+		map.put("userName", user.getUserName());
+		map.put("name", name);
+		map.put("list", requestPmsList);
+		map.put("samplingUrl", samplingUrl);
+		map.put("fileDataList", fileDataList);
+		return handler.getScenesScriptTemplate(map);
 	}
 
 	/**

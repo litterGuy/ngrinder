@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.script.handler;
 
@@ -33,6 +33,7 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
@@ -133,9 +134,9 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @param processingResult processing result holder.
 	 */
 	public void prepareDist(Long testCaseId,
-	                        User user, //
-	                        FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
-	                        ProcessingResultPrintStream processingResult) {
+							User user, //
+							FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
+							ProcessingResultPrintStream processingResult) {
 		prepareDefaultFile(distDir, properties);
 		List<FileEntry> fileEntries = getLibAndResourceEntries(user, scriptEntry, -1);
 		if (scriptEntry.getRevision() != 0) {
@@ -173,7 +174,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @return true if process more.
 	 */
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url,
-	                                boolean createLibAndResources, String scriptContent) {
+									boolean createLibAndResources, String scriptContent) {
 		return true;
 	}
 
@@ -189,7 +190,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 	 * @param processingResult processing result holder
 	 */
 	protected void prepareDistMore(Long testCaseId, User user, FileEntry script, File distDir,
-	                               PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
+								   PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 	}
 
 	/**
@@ -220,7 +221,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "lib/", revision, true)) {
 			// Skip jython 2.5... it's already included.
 			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
-					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
+				|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
 				continue;
 			}
 			FileType fileType = eachFileEntry.getFileType();
@@ -294,6 +295,22 @@ public abstract class ScriptHandler implements ControllerConstants {
 			return writer.toString();
 		} catch (Exception e) {
 			throw processException("Error while fetching the script template.", e);
+		}
+	}
+
+	public String getScenesScriptTemplate(Map<String, Object> values) {
+		try {
+			Configuration freemarkerConfig = new Configuration();
+			ClassPathResource cpr = new ClassPathResource("script_template");
+			freemarkerConfig.setDirectoryForTemplateLoading(cpr.getFile());
+			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
+			freemarkerConfig.setEncoding(Locale.getDefault(), "UTF-8");
+			Template template = freemarkerConfig.getTemplate("basic_scenes_template_" + getExtension() + ".ftl");
+			StringWriter writer = new StringWriter();
+			template.process(values, writer);
+			return writer.toString();
+		} catch (Exception e) {
+			throw processException("Error while fetching the scenes script template.", e);
 		}
 	}
 

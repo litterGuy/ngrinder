@@ -1,11 +1,13 @@
 package org.ngrinder.feature.model;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * 创建压测
  */
 public class TestPms {
+	private Long id;
 	private String name;//场景名
 	private List<RequestPms> requestPmsList;//请求
 	private List<FileData> fileDataList;//数据源
@@ -26,6 +28,15 @@ public class TestPms {
 	private int threads;//线程数
 	private int samplingInterval;//采样间隔
 	private String param;//测试参数,测试脚本可以在命令行里获取参数，目前未实现'
+	private Date scheduledTime;//定时时间，不在scenes表中
+
+	public Date getScheduledTime() {
+		return scheduledTime;
+	}
+
+	public void setScheduledTime(Date scheduledTime) {
+		this.scheduledTime = scheduledTime;
+	}
 
 	public String getName() {
 		return name;
@@ -185,5 +196,13 @@ public class TestPms {
 
 	public void setParam(String param) {
 		this.param = param;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }

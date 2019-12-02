@@ -55,7 +55,7 @@ public class TemplateTest {
 		map.put("list", testPms.getRequestPmsList());
 		//为方便freemarker使用，将object转化成string
 		map.put("fileDataList", this.getFileDataStrList(testPms));
-		map.put("samplingUrl", this.getFileDataStrList(testPms));
+		map.put("samplingUrl", "http://www.baidu.com/sampling");
 		System.out.println(this.getScriptTemplate(map));
 
 	}
