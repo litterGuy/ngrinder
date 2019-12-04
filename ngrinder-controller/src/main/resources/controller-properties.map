@@ -33,7 +33,7 @@ controller.front_page_qna_rss,,ngrinder.qna.rss
 controller.front_page_qna_more_url,,ngrinder.more.question.url
 controller.front_page_ask_question_url,,ngrinder.ask.question.url
 controller.help_url,https://github.com/naver/ngrinder/wiki/user-guide,ngrinder.help.url
-controller.default_lang,en,ngrinder.langauge.default
+controller.default_lang,cn,ngrinder.langauge.default
 controller.admin_password_reset,false,
 controller.agent_force_update,false,
 controller.update_chunk_size,1048576,
