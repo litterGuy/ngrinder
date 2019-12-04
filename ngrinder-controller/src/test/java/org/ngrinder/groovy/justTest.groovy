@@ -15,4 +15,11 @@ class justTest {
         list.add(objectMap)
         println list
     }
+
+    @Test
+    void arrays(){
+        String[] tmp = {};
+        Arrays.fill(tmp, "123");
+        println tmp[0]
+    }
 }

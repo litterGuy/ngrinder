@@ -274,6 +274,10 @@ public class FileEntryService {
 		fileEntityRepository.delete(user, newArrayList(path));
 	}
 
+	public void delete(User user, List<String> pathList) {
+		fileEntityRepository.delete(user, pathList);
+	}
+
 	String getPathFromUrl(String urlString) {
 		try {
 			URL url = new URL(urlString);

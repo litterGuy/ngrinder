@@ -60,6 +60,17 @@ public class FeatureTestController extends BaseController {
 	@Autowired
 	private PerfTestService perfTestService;
 
+	@ModelAttribute
+	public User setUser() {
+		User user = userService.getOne("admin");
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(new SecuredUser(user, null), null);
+		SecurityContextImpl context = new SecurityContextImpl();
+		context.setAuthentication(token);
+		SecurityContextHolder.setContext(context);
+		return user;
+	}
+
+
 	/**
 	 * 创建压测脚本，创建测试，执行测试
 	 * 因为场景在ngrinder-sampling中已经生成，所以直接生成并执行测试、不再有保存测试
@@ -68,13 +79,7 @@ public class FeatureTestController extends BaseController {
 	 */
 	@RequestMapping(value = "/createTest", method = RequestMethod.POST)
 	@ResponseBody
-	public Object createTest(@RequestBody TestPms testPms) {
-		User user = userService.getOne("admin");
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(new SecuredUser(user, null), null);
-		SecurityContextImpl context = new SecurityContextImpl();
-		context.setAuthentication(token);
-		SecurityContextHolder.setContext(context);
-
+	public Object createTest(@ModelAttribute User user, @RequestBody TestPms testPms) {
 		String samplingUrl = config.getControllerProperties().getProperty("controller.samp_url");
 		//1、获取参数，生成脚本
 		String scriptType = "groovy";
@@ -143,13 +148,9 @@ public class FeatureTestController extends BaseController {
 	 */
 	@RequestMapping(value = "/uploadData", method = RequestMethod.POST)
 	@ResponseBody
-	public String uploadData(@RequestParam("uploadFile") MultipartFile file) {
-		//TODO 删除多余的数据文件
-		User user = userService.getOne("admin");
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(new SecuredUser(user, null), null);
-		SecurityContextImpl context = new SecurityContextImpl();
-		context.setAuthentication(token);
-		SecurityContextHolder.setContext(context);
+	public String uploadData(@ModelAttribute User user, @RequestParam("uploadFile") MultipartFile file) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("code", 0);
 
 		//读取文件封装成FileEntry
 		FileEntry fileEntry = new FileEntry();
@@ -157,10 +158,55 @@ public class FeatureTestController extends BaseController {
 			fileEntry.setContentBytes(file.getBytes());
 			fileEntry.setPath("resources/" + UUID.randomUUID().toString().replaceAll("-", "") + "/" + file.getOriginalFilename());
 			fileEntryService.save(user, fileEntry);
+			result.put("data", fileEntry.getPath());
 		} catch (IOException e) {
 			LOG.error(e.getMessage());
+			result.put("code", "1");
+			result.put("errMsg", e.getMessage());
 		}
-		return fileEntry.getPath();
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+		return gson.toJson(result);
+	}
+
+	@RequestMapping(value = "/deleteScript", method = RequestMethod.GET)
+	@ResponseBody
+	public Object deleteScript(@ModelAttribute User user, long id, String path) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("code", 0);
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+		if (id <= 0) {
+			result.put("code", 1);
+			result.put("errMsg", "id can not empty");
+			return gson.toJson(result);
+		}
+		//删除脚本，删除resources资源
+		if (fileEntryService.hasFileEntry(user, id + "")) {
+			fileEntryService.delete(user, id + "");
+		}
+		if (StringUtils.isNotEmpty(path)) {
+			try {
+				List<String> pathList = new ArrayList<>();
+				if (!path.contains(",")) {
+					pathList.add(path);
+				} else {
+					String[] tmp = path.split(",");
+					for (String s : tmp) {
+						pathList.add(s);
+					}
+				}
+				for (int i = 0; i < pathList.size(); i++) {
+					String tmp = pathList.get(i).split("/")[2];
+					pathList.set(i, "resources/" + tmp);
+				}
+				fileEntryService.delete(user, pathList);
+			} catch (Exception e) {
+				LOG.error(e.getMessage());
+				result.put("code", 1);
+				result.put("errMsg", e.getMessage());
+				return gson.toJson(result);
+			}
+		}
+		return gson.toJson(result);
 	}
 
 	private List<String> getFileDataStrList(TestPms testPms) {

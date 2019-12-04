@@ -83,9 +83,9 @@
 			<div class="login">
 					<span class="lgn_ipt">
 						<input type="text" class="span2 input" name="j_username" id="j_username"
-							   placeholder="User ID"><br>
+							   placeholder="User ID" value="admin"><br>
 						<input type="password" class="span2 input" name="j_password" id="j_password"
-							   placeholder="Password">
+							   placeholder="Password" value="admin">
 					</span>
 				<input id="loginBtn" type="image"
 					   src="${req.getContextPath()}/img/login.gif" alt="Login"
@@ -97,9 +97,9 @@
 					   name='_spring_security_remember_me'/>
 				<span>Remember Me</span>
 				<select id="native_language" name="native_language" style="margin-left:60px;width:80px">
+					<option value="cn">中文</option>
 					<option value="en">English</option>
 					<option value="kr">한국어</option>
-					<option value="cn">中文</option>
 				</select>
 			</div>
 
