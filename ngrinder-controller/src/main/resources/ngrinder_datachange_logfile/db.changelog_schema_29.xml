@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="ngrinder.3.3.1" id="29" dbms="mysql">
+		<validCheckSum/>
+		<comment>change scences table.</comment>
+		<sql>
+			alter table request_pms modify column type int(11) not null comment '请求类型，0：登陆携带cookies类型；1：普通请求；2：集合点；其他待定';
+
+			alter table request_pms add column wait_time int(11) default null comment '集合点等待时间';
+			alter table request_pms add column wait_vuser_num int(11) default null comment '集合点等待用户量';
+		</sql>
+	</changeSet>
+</databaseChangeLog>
