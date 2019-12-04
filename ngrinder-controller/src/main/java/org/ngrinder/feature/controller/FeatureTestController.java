@@ -148,9 +148,22 @@ public class FeatureTestController extends BaseController {
 	 */
 	@RequestMapping(value = "/uploadData", method = RequestMethod.POST)
 	@ResponseBody
-	public String uploadData(@ModelAttribute User user, @RequestParam("uploadFile") MultipartFile file) {
+	public String uploadData(@ModelAttribute User user, @RequestParam("uploadFile") MultipartFile file, String oldPath) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("code", 0);
+
+		//删除之前的旧文件
+		if (StringUtils.isNotEmpty(oldPath)) {
+			try {
+				if (oldPath.contains("./")) {
+					oldPath = oldPath.replace("./", "");
+				}
+				String path = "resources/"+oldPath.split("/")[1];
+				fileEntryService.delete(user, path);
+			} catch (Exception e) {
+				LOG.error("delete old file error {}", e.getMessage());
+			}
+		}
 
 		//读取文件封装成FileEntry
 		FileEntry fileEntry = new FileEntry();
