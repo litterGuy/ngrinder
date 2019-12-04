@@ -7,6 +7,7 @@ import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.controller.BaseController;
+import org.ngrinder.feature.model.FileData;
 import org.ngrinder.feature.model.TestPms;
 import org.ngrinder.feature.utils.BeanCovertUtils;
 import org.ngrinder.infra.config.Config;
@@ -31,10 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.Preconditions.*;
@@ -93,6 +91,15 @@ public class FeatureTestController extends BaseController {
 		if (StringUtils.isNotEmpty(testPms.getTargetHosts())) {
 			entry.setProperties(buildMap("targetHosts", testPms.getTargetHosts()));
 		}
+		//如果存在数据源文件，增加到脚本svn文件属性中
+		if (testPms.getFileDataList().size() > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (FileData fileData : testPms.getFileDataList()) {
+				sb.append(fileData.getPath());
+				sb.append(",");
+			}
+			entry.setProperties(buildMap("resourcesData", sb.toString()));
+		}
 		fileEntryService.save(user, entry);
 
 		String basePath = entry.getPath();
@@ -137,6 +144,7 @@ public class FeatureTestController extends BaseController {
 	@RequestMapping(value = "/uploadData", method = RequestMethod.POST)
 	@ResponseBody
 	public String uploadData(@RequestParam("uploadFile") MultipartFile file) {
+		//TODO 删除多余的数据文件
 		User user = userService.getOne("admin");
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(new SecuredUser(user, null), null);
 		SecurityContextImpl context = new SecurityContextImpl();
@@ -146,9 +154,8 @@ public class FeatureTestController extends BaseController {
 		//读取文件封装成FileEntry
 		FileEntry fileEntry = new FileEntry();
 		try {
-			//TODO 设置详细信息
 			fileEntry.setContentBytes(file.getBytes());
-			fileEntry.setPath("resources/" + file.getOriginalFilename());
+			fileEntry.setPath("resources/" + UUID.randomUUID().toString().replaceAll("-", "") + "/" + file.getOriginalFilename());
 			fileEntryService.save(user, fileEntry);
 		} catch (IOException e) {
 			LOG.error(e.getMessage());

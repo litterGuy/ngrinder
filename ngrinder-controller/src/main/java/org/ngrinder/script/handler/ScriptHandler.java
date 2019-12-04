@@ -17,6 +17,7 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.util.FileUtils;
 import org.ngrinder.common.util.PathUtils;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -138,6 +140,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 							FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
 							ProcessingResultPrintStream processingResult) {
 		prepareDefaultFile(distDir, properties);
+		//获取resource时，从svn属性中获取相关联的文件，然后分发到agent
 		List<FileEntry> fileEntries = getLibAndResourceEntries(user, scriptEntry, -1);
 		if (scriptEntry.getRevision() != 0) {
 			fileEntries.add(scriptEntry);
@@ -229,12 +232,27 @@ public abstract class ScriptHandler implements ControllerConstants {
 				fileList.add(eachFileEntry);
 			}
 		}
-		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "resources/", revision, true)) {
-			FileType fileType = eachFileEntry.getFileType();
-			if (fileType.isResourceDistributable()) {
-				fileList.add(eachFileEntry);
+		//获取脚本svn中的resourcesData，拉取该部分文件。如果不存在该属性，不在拉取resources下的文件
+		String resourcesDataStr = scriptEntry.getProperties().get("resourcesData");
+		if (StringUtils.isNotEmpty(resourcesDataStr)) {
+			String[] resourcesArray = resourcesDataStr.split(",");
+			for (int i = 0; i < resourcesArray.length; i++) {
+				if (StringUtils.isNotEmpty(resourcesArray[i])) {
+					String resource = resourcesArray[i].replace("./", "");
+					FileEntry entry = fileEntryRepository.findOne(user, resource, SVNRevision.HEAD);
+					if (entry.getFileType().isResourceDistributable()) {
+						fileList.add(entry);
+					}
+				}
 			}
 		}
+		//获取resources下所有文件，现已经注释掉
+//		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "resources/", revision, true)) {
+//			FileType fileType = eachFileEntry.getFileType();
+//			if (fileType.isResourceDistributable()) {
+//				fileList.add(eachFileEntry);
+//			}
+//		}
 		return fileList;
 	}
 
