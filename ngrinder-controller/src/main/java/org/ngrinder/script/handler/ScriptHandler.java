@@ -152,7 +152,13 @@ public abstract class ScriptHandler implements ControllerConstants {
 			if (each.getFileType() == FileType.DIR) {
 				continue;
 			}
-			File toDir = new File(distDir, calcDistSubPath(basePath, each));
+			File toDir;
+			if (each.getFileType().isResourceDistributable()) {
+				toDir = new File(distDir, FilenameUtils.getPath(each.getPath()));
+			} else {
+				toDir = new File(distDir, calcDistSubPath(basePath, each));
+			}
+
 			processingResult.printf("%s is being written.\n", each.getPath());
 			LOGGER.info("{} is being written in {} for test {}", new Object[]{each.getPath(), toDir, testCaseId});
 			getFileEntryRepository().writeContentTo(user, each.getPath(), toDir);

@@ -56,7 +56,7 @@ class TestRunner {
 	public ConcurrentMap<String,Object> samplingMap = new ConcurrentHashMap<>()
 	public List<Map<String,Object>> samplingList = new CopyOnWriteArrayList<>()
 
-	public Jedis jedis;
+	public static Jedis jedis;
 	public static String VUSERNUM_KEY = "vuser_num_redis_key"
 
 	//初始化csv数据
@@ -184,14 +184,8 @@ class TestRunner {
 		def jsonOutput = new JsonOutput()
 		String json = jsonOutput.toJson(tmpList);
 		//发送请求
-		HTTPRequest requestSamp = new HTTPRequest()
-		NVPair[] headers = [
-			new NVPair("Content-Type", "application/json")
-		]
-
 		String sampUrl = "${samplingUrl}"
-
-		request.POST(sampUrl, json.bytes, headers)
+		doPOST(sampUrl,json)
 	}
 
 	private static void reservoirSampling(List samples, ConcurrentMap<String, Object> sample, int num) {
@@ -206,5 +200,69 @@ class TestRunner {
 				samples.set(i, sample);
 			}
 		}
+	}
+
+	/**
+	* 使用POST方法读取HTTP中的数据
+	*
+	* @param urlAddress url地址
+	* @param params 参数
+	* @return 请求的响应数据
+	*/
+	private static String doPOST(String urlAddress, String params) {
+		try {
+			// 创建URL对象
+			URL url = new URL(urlAddress);
+			// 打开连接 获取连接对象
+			URLConnection connection = url.openConnection();
+			// 设置请求编码
+			connection.addRequestProperty("encoding", "UTF-8");
+			// 设置允许输入
+			connection.setDoInput(true);
+			// 设置允许输出
+			connection.setDoOutput(true);
+
+			// 从连接对象中获取输出字节流对象
+			OutputStream outputStream = connection.getOutputStream();
+			// 将输出的字节流对象包装成字符流写出对象
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+			// 创建一个输出缓冲区对象,将要输出的字符流写出对象传入
+			BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
+			// 向输出缓冲区中写入请求参数
+			bufferedWriter.write(params);
+			// 刷新输出缓冲区
+			bufferedWriter.flush();
+
+			// 从连接对象中获取输入字节流对象
+			InputStream inputStream = connection.getInputStream();
+			// 将输入字节流对象包装成输入字符流对象，并将字符编码为UTF-8格式
+			InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+			// 创建一个输入缓冲区对象，将要输入的字符流对象传入
+			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+			// 创建一个字符串对象，用来接收每次从输入缓冲区中读入的字符串
+			String line;
+			// 创建一个可变字符串对象，用来装载缓冲区对象的最终数据，使用字符串追加的方式，将响应的所有数据都保存在该对象中
+			StringBuilder stringBuilder = new StringBuilder();
+			// 使用循环逐行读取缓冲区的数据，每次循环读入一行字符串数据赋值给line字符串变量，直到读取的行为空时标识内容读取结束循环
+			while ((line = bufferedReader.readLine()) != null) {
+				// 将缓冲区读取到的数据追加到可变字符对象中
+				stringBuilder.append(line);
+			}
+		// 依次关闭打开的输入流
+		bufferedReader.close();
+		inputStreamReader.close();
+		inputStream.close();
+		// 依次关闭打开的输出流
+		bufferedWriter.close();
+		outputStreamWriter.close();
+		outputStream.close();
+		// 将可变字符串转换成String对象返回
+		return stringBuilder.toString();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

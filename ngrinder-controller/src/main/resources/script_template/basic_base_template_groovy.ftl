@@ -7,12 +7,12 @@ public void ${reqPms.funName}(){
 		//设置检查点
 		<#if reqPms.waitTime?? && reqPms.waitTime gt 0 >
 		//根据时间等待，单位s
-		Thread.sleep(${reqPms.waitTime}*1000)
+		Thread.sleep(${reqPms.waitTime?c}*1000)
 		<#elseif reqPms.waitVuserNum?? && reqPms.waitVuserNum gt 0 >
 		//根据用户量等待
 		long vnum = jedis.incr(VUSERNUM_KEY)
 		long begin = System.currentTimeMillis()
-		while(vnum< 100){
+		while(vnum< ${reqPms.waitVuserNum?c}){
 			Thread.sleep(1000)
 			vnum = jedis.get(VUSERNUM_KEY)
 			//等待超过20分钟，则自动退出循环、避免死循环

@@ -81,6 +81,14 @@ public class FeatureTestController extends BaseController {
 	@ResponseBody
 	public Object createTest(@ModelAttribute User user, @RequestBody TestPms testPms) {
 		String samplingUrl = config.getControllerProperties().getProperty("controller.samp_url");
+		String redisHost = config.getControllerProperties().getProperty("controller.redisHost", null);
+		String redisPort = config.getControllerProperties().getProperty("controller.redisPort", null);
+		String redisPassword = config.getControllerProperties().getProperty("controller.redisPassword", null);
+		Map<String, Object> redisMap = new HashMap<>();
+		redisMap.put("redisHost", redisHost);
+		redisMap.put("redisPort", redisPort);
+		redisMap.put("redisPassword", redisPassword);
+
 		//1、获取参数，生成脚本
 		String scriptType = "groovy";
 		String fileName = "TestRunner.groovy";//暂时定为groovy，后续如果增加python脚本再做修改
@@ -91,7 +99,7 @@ public class FeatureTestController extends BaseController {
 		entry.setPath(fileName);
 
 		entry = fileEntryService.prepareNewEntryForScenes(user, path, fileName, name, testPms.getRequestPmsList(), scriptHandler,
-			false, samplingUrl, this.getFileDataStrList(testPms));
+			false, samplingUrl, this.getFileDataStrList(testPms), redisMap);
 		//如果存在targetHosts，那么需要往svn中存储
 		if (StringUtils.isNotEmpty(testPms.getTargetHosts())) {
 			entry.setProperties(buildMap("targetHosts", testPms.getTargetHosts()));
@@ -158,7 +166,7 @@ public class FeatureTestController extends BaseController {
 				if (oldPath.contains("./")) {
 					oldPath = oldPath.replace("./", "");
 				}
-				String path = "resources/"+oldPath.split("/")[1];
+				String path = "resources/" + oldPath.split("/")[1];
 				fileEntryService.delete(user, path);
 			} catch (Exception e) {
 				LOG.error("delete old file error {}", e.getMessage());

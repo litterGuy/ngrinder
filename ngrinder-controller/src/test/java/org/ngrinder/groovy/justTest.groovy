@@ -25,8 +25,12 @@ class justTest {
         Arrays.fill(tmp, "123");
         println tmp[0]
         long start = System.currentTimeMillis()
-        Thread.sleep(10000)
+        pause()
         long end = System.currentTimeMillis()
         println end - start
+    }
+
+    public void pause(){
+        Thread.sleep(1,000*1000)
     }
 }

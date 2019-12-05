@@ -329,16 +329,17 @@ public class FileEntryService {
 	}
 
 	public FileEntry prepareNewEntryForScenes(User user, String path, String fileName, String name, List<RequestPms> requestPmsList,
-											  ScriptHandler scriptHandler, boolean libAndResource, String samplingUrl, List<String> fileDataList) {
+											  ScriptHandler scriptHandler, boolean libAndResource, String samplingUrl, List<String> fileDataList,
+											  Map<String, Object> redisMap) {
 		if (scriptHandler instanceof ProjectHandler) {
 			scriptHandler.prepareScriptEnv(user, path, fileName, name, null, libAndResource,
-				loadScenesTemplate(user, getScriptHandler("groovy"), requestPmsList, name, samplingUrl, fileDataList));
+				loadScenesTemplate(user, getScriptHandler("groovy"), requestPmsList, name, samplingUrl, fileDataList, redisMap));
 			return null;
 		}
 		path = PathUtils.join(path, fileName);
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath(path);
-		fileEntry.setContent(loadScenesTemplate(user, getScriptHandler("groovy"), requestPmsList, name, samplingUrl, fileDataList));
+		fileEntry.setContent(loadScenesTemplate(user, getScriptHandler("groovy"), requestPmsList, name, samplingUrl, fileDataList, redisMap));
 		fileEntry.setProperties(new HashMap<String, String>());
 		return fileEntry;
 	}
@@ -389,13 +390,14 @@ public class FileEntryService {
 	}
 
 	public String loadScenesTemplate(User user, ScriptHandler handler, List<RequestPms> requestPmsList, String name,
-									 String samplingUrl, List<String> fileDataList) {
+									 String samplingUrl, List<String> fileDataList, Map<String, Object> redisMap) {
 		Map<String, Object> map = newHashMap();
 		map.put("userName", user.getUserName());
 		map.put("name", name);
 		map.put("list", requestPmsList);
 		map.put("samplingUrl", samplingUrl);
 		map.put("fileDataList", fileDataList);
+		map.putAll(redisMap);
 		return handler.getScenesScriptTemplate(map);
 	}
 
