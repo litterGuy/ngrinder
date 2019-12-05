@@ -105,7 +105,10 @@ class TestRunner {
 		</#if>
 
 		VUSERNUM_KEY += grinder.getProperties().get("grinder.test.id").toString()
-		jedis = new Jedis("${redisHost}", ${redisPort});
+		jedis = new Jedis("${redisHost}", ${redisPort})
+		<#if redisPassword??>
+			jedis.auth("${redisPassword}")
+		</#if>
 	}
 
 	@BeforeThread
