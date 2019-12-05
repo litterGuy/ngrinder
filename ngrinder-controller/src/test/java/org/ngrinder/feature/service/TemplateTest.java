@@ -35,14 +35,12 @@ public class TemplateTest {
 		testPms.setRequestPmsList(requestPmsList);
 
 		requestPmsList.add(this.getPostLogin());
+		requestPmsList.add(this.getConsolidationPoint());
 		requestPmsList.add(this.getGetReq());
 		requestPmsList.add(this.getGetReq());
 
 		//为了防止生成多个请求时参数名称重复，预先生成函数名称，最后在test内调用
 		for (int i = 0; i < requestPmsList.size(); i++) {
-			if (requestPmsList.get(i).getType() == 0) {
-				continue;
-			}
 			requestPmsList.get(i).setFunName("test_" + i);
 		}
 
@@ -56,6 +54,10 @@ public class TemplateTest {
 		//为方便freemarker使用，将object转化成string
 		map.put("fileDataList", this.getFileDataStrList(testPms));
 		map.put("samplingUrl", "http://www.baidu.com/sampling");
+		//传递redis
+		map.put("redisHost","127.0.0.1");
+		map.put("redisPort","6379");
+		map.put("redisPassword","123456");
 		System.out.println(this.getScriptTemplate(map));
 
 	}
@@ -147,6 +149,17 @@ public class TemplateTest {
 		assertion.setFactor(">");
 		assertion.setContent("0");
 		assertionList.add(assertion);
+		return requestPms;
+	}
+
+	private RequestPms getConsolidationPoint() {
+		RequestPms requestPms = new RequestPms();
+		requestPms.setId(13);
+		requestPms.setApiName("检查点设置");
+		requestPms.setSort(1);
+		requestPms.setType(2);
+		requestPms.setUrl("none");
+		requestPms.setWaitVuserNum(1000);
 		return requestPms;
 	}
 

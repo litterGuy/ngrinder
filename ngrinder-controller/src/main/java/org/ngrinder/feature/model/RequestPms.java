@@ -32,6 +32,28 @@ public class RequestPms {
 	//检查点设置
 	private List<Assertion> assertionList;
 
+	//检查点等待时间
+	private int waitTime;
+	//检查点等待用户量
+	private int waitVuserNum;
+	
+	public int getWaitTime() {
+		return waitTime;
+	}
+
+	public void setWaitTime(int waitTime) {
+		this.waitTime = waitTime;
+	}
+
+	public int getWaitVuserNum() {
+		return waitVuserNum;
+	}
+
+	public void setWaitVuserNum(int waitVuserNum) {
+		this.waitVuserNum = waitVuserNum;
+	}
+
+
 	public RequestPms() {
 	}
 

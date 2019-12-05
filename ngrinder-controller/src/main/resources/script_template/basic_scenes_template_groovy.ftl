@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue
 import org.ngrinder.recorder.RecorderUtils
 import org.json.JSONArray
 import groovy.json.JsonOutput
+import redis.clients.jedis.Jedis;
 
 /**
  * A scenes test
@@ -54,6 +55,9 @@ class TestRunner {
 	public static List<ConcurrentMap<String,Object>> processList = new ArrayList<>()
 	public ConcurrentMap<String,Object> samplingMap = new ConcurrentHashMap<>()
 	public List<Map<String,Object>> samplingList = new CopyOnWriteArrayList<>()
+
+	public Jedis jedis;
+	public static String VUSERNUM_KEY = "vuser_num_redis_key"
 
 	//初始化csv数据
 	public static void loadData(String paramStr){
@@ -99,6 +103,9 @@ class TestRunner {
 		this.loadData('${fileData}')
 			</#list>
 		</#if>
+
+		VUSERNUM_KEY += grinder.getProperties().get("grinder.test.id").toString()
+		jedis = new Jedis("${redisHost}", ${redisPort});
 	}
 
 	@BeforeThread
@@ -121,9 +128,12 @@ class TestRunner {
 		}
 
 		//如果存在登陆，则先进行登陆操作获取cookies
-        <#if list?? && list?size != 0 && list[0].type == 0>
-            <#assign reqPms = list[0]>
-            <#include "basic_base_template_groovy.ftl"/>
+        <#if list?? && list?size != 0>
+			<#list list as reqPms>
+				<#if reqPms.type == 0 && reqPms.funName??>
+        ${reqPms.funName}()
+				</#if>
+			</#list>
         </#if>
 		cookies = CookieModule.listAllCookies(threadContext)
 
@@ -136,7 +146,7 @@ class TestRunner {
 		//调用生成的函数
         <#if list?? && list?size != 0>
             <#list list as reqPms>
-				<#if reqPms.funName??>
+				<#if reqPms.funName?? && reqPms.type != 0>
 		${reqPms.funName}()
 				</#if>
             </#list>
@@ -149,9 +159,7 @@ class TestRunner {
 	//循环进行请求生成
 	<#if list?? && list?size != 0>
 		<#list list as reqPms>
-			<#if reqPms.type != 0>
-	<#include "basic_base_template_groovy.ftl"/>
-			</#if>
+            <#include "basic_base_template_groovy.ftl"/>
 		</#list>
 	</#if>
 

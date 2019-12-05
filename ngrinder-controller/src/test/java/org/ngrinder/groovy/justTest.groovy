@@ -1,8 +1,11 @@
 package org.ngrinder.groovy
 
 import org.junit.Test
+import redis.clients.jedis.Jedis
 
 class justTest {
+
+    public Jedis jedis;
 
     @Test
     void test(){
@@ -21,5 +24,9 @@ class justTest {
         String[] tmp = {};
         Arrays.fill(tmp, "123");
         println tmp[0]
+        long start = System.currentTimeMillis()
+        Thread.sleep(10000)
+        long end = System.currentTimeMillis()
+        println end - start
     }
 }
