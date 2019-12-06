@@ -12,16 +12,17 @@ public void ${reqPms.funName}(){
 		//根据用户量等待
 		long vnum = jedis.incr(VUSERNUM_KEY)
 		long begin = System.currentTimeMillis()
-		while(vnum< ${reqPms.waitVuserNum?c}){
+		while(vnum < ${reqPms.waitVuserNum?c}){
 			Thread.sleep(1000)
-			vnum = jedis.get(VUSERNUM_KEY)
-			//等待超过20分钟，则自动退出循环、避免死循环
+			vnum = Long.parseLong(jedis.get(VUSERNUM_KEY))
+			//等待超过15分钟，则自动退出循环、避免死循环
 			long now = System.currentTimeMillis()
 			if((now-begin)>=15*60*1000){
 				break;
 			}
 		}
-		jedis.expire(VUSERNUM_KEY,20)
+		grinder.logger.info("----当前用户量：{}----", vnum)
+		jedis.expire(VUSERNUM_KEY,60*60)
 		</#if>
 	<#else>
 		//设置header
