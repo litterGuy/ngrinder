@@ -174,6 +174,7 @@ class TestRunner {
 
 	@AfterProcess
 	public static void afterProcess(){
+		<#if samplingUrl??>
 		//取样收集，采集10%
 		int size = processList.size() / 10 > 0 ? processList.size() / 10 : 1
 		List<ConcurrentMap<String, Object>> tmpList = new ArrayList<>()
@@ -186,6 +187,7 @@ class TestRunner {
 		//发送请求
 		String sampUrl = "${samplingUrl}"
 		doPOST(sampUrl,json)
+		</#if>
 	}
 
 	private static void reservoirSampling(List samples, ConcurrentMap<String, Object> sample, int num) {

@@ -8,6 +8,7 @@ import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constants.GrinderConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.feature.model.FileData;
+import org.ngrinder.feature.model.RequestPms;
 import org.ngrinder.feature.model.TestPms;
 import org.ngrinder.feature.utils.BeanCovertUtils;
 import org.ngrinder.infra.config.Config;
@@ -19,6 +20,7 @@ import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.script.service.ScriptValidationService;
 import org.ngrinder.security.SecuredUser;
 import org.ngrinder.service.IUserService;
 import org.slf4j.Logger;
@@ -59,6 +61,8 @@ public class FeatureTestController extends BaseController {
 	private AgentManagerService agentManagerService;
 	@Autowired
 	private PerfTestService perfTestService;
+	@Autowired
+	private ScriptValidationService scriptValidationService;
 
 	@ModelAttribute
 	public User setUser() {
@@ -113,10 +117,11 @@ public class FeatureTestController extends BaseController {
 			}
 			entry.setProperties(buildMap("resourcesData", sb.toString()));
 		}
+		//TODO 增加脚本校验功能，看流程上怎么修改合适
+
 		fileEntryService.save(user, entry);
 
 		String basePath = entry.getPath();
-		//TODO 增加脚本校验功能，看流程上怎么修改合适
 		//2、转化perTest,生成perf_test数据
 		PerfTest perfTest = BeanCovertUtils.getPerfTestBean(testPms);
 		perfTest.setScriptName(basePath);
@@ -134,6 +139,55 @@ public class FeatureTestController extends BaseController {
 		}
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 		return gson.toJson(result);
+	}
+
+	@RequestMapping(value = "/validScript", method = RequestMethod.POST)
+	@ResponseBody
+	public Object validScript(@ModelAttribute User user, @RequestBody TestPms testPms) {
+		String samplingUrl = null;
+		String redisHost = config.getControllerProperties().getProperty("controller.redisHost", null);
+		String redisPort = config.getControllerProperties().getProperty("controller.redisPort", null);
+		String redisPassword = config.getControllerProperties().getProperty("controller.redisPassword", null);
+		Map<String, Object> redisMap = new HashMap<>();
+		redisMap.put("redisHost", redisHost);
+		redisMap.put("redisPort", redisPort);
+		redisMap.put("redisPassword", redisPassword);
+
+		//1、获取参数，生成脚本
+		String scriptType = "groovy";
+		String fileName = "TestRunner.groovy";//暂时定为groovy，后续如果增加python脚本再做修改
+		String name = testPms.getName();
+		String path = testPms.getId().toString();//scenesId做中间路径
+		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(scriptType);
+		FileEntry entry = new FileEntry();
+		entry.setPath(fileName);
+
+		//去除检查点设置
+		for (int i = 0; i < testPms.getRequestPmsList().size(); i++) {
+			RequestPms pms = testPms.getRequestPmsList().get(i);
+			if (pms.getType() == 2) {
+				pms.setWaitVuserNum(0);
+				pms.setWaitTime(0);
+				testPms.getRequestPmsList().set(i, pms);
+			}
+		}
+		entry = fileEntryService.prepareNewEntryForScenes(user, path, fileName, name, testPms.getRequestPmsList(), scriptHandler,
+			false, samplingUrl, this.getFileDataStrList(testPms), redisMap);
+		//如果存在targetHosts，那么需要往svn中存储
+		if (StringUtils.isNotEmpty(testPms.getTargetHosts())) {
+			entry.setProperties(buildMap("targetHosts", testPms.getTargetHosts()));
+		}
+		//如果存在数据源文件，增加到脚本svn文件属性中
+		if (testPms.getFileDataList().size() > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (FileData fileData : testPms.getFileDataList()) {
+				sb.append(fileData.getPath());
+				sb.append(",");
+			}
+			entry.setProperties(buildMap("resourcesData", sb.toString()));
+		}
+		entry.setCreatedUser(user);
+		return toJsonHttpEntity(scriptValidationService.validate(user, entry, false, null));
 	}
 
 	/**
