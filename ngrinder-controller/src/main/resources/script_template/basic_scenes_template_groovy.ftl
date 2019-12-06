@@ -33,8 +33,6 @@ import org.ngrinder.recorder.RecorderUtils
 import org.json.JSONArray
 import groovy.json.JsonOutput
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool
-import redis.clients.jedis.JedisPoolConfig
 
 /**
  * A scenes test
@@ -58,7 +56,6 @@ class TestRunner {
 	public ConcurrentMap<String,Object> samplingMap = new ConcurrentHashMap<>()
 	public List<Map<String,Object>> samplingList = new CopyOnWriteArrayList<>()
 
-	public static JedisPool jedisPool
 	public Jedis jedis
 	public static String VUSERNUM_KEY = "vuser_num_redis_key"
 
@@ -108,16 +105,6 @@ class TestRunner {
 		</#if>
 
 		VUSERNUM_KEY += grinder.getProperties().get("grinder.test.id").toString()
-
-		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig()
-		jedisPoolConfig.setMaxIdle(100)
-		jedisPoolConfig.setMaxWaitMillis(40000)
-		jedisPoolConfig.setTestOnBorrow(true)
-		<#if redisPassword??>
-		jedisPool = new JedisPool(jedisPoolConfig, "${redisHost}", ${redisPort}, 2000, "${redisPassword}")
-		<#else>
-		jedisPool = new JedisPool(jedisPoolConfig, "${redisHost}", ${redisPort}, 2000)
-		</#if>
 	}
 
 	@BeforeThread
@@ -125,7 +112,10 @@ class TestRunner {
 		test.record(this, "test")
 		grinder.statistics.delayReports=true;
 		grinder.logger.info("before thread.");
-		jedis = jedisPool.getResource()
+		jedis = new Jedis("${redisHost}", ${redisPort})
+        <#if redisPassword??>
+		jedis.auth("${redisPassword}")
+		</#if>
 	}
 
 	@Before

@@ -21,7 +21,6 @@ public void ${reqPms.funName}(){
 				break;
 			}
 		}
-		grinder.logger.info("----当前用户量：{}----", vnum)
 		jedis.expire(VUSERNUM_KEY,60*60)
 		</#if>
 	<#else>
