@@ -117,7 +117,6 @@ public class FeatureTestController extends BaseController {
 			}
 			entry.setProperties(buildMap("resourcesData", sb.toString()));
 		}
-		//TODO 增加脚本校验功能，看流程上怎么修改合适
 
 		fileEntryService.save(user, entry);
 
