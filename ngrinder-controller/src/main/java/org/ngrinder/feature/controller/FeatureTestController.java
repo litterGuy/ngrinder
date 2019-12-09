@@ -64,9 +64,8 @@ public class FeatureTestController extends BaseController {
 	@Autowired
 	private ScriptValidationService scriptValidationService;
 
-	@ModelAttribute
-	public User setUser() {
-		User user = userService.getOne("admin");
+	private User setUser(String userId) {
+		User user = userService.getOne(userId);
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(new SecuredUser(user, null), null);
 		SecurityContextImpl context = new SecurityContextImpl();
 		context.setAuthentication(token);
@@ -83,7 +82,8 @@ public class FeatureTestController extends BaseController {
 	 */
 	@RequestMapping(value = "/createTest", method = RequestMethod.POST)
 	@ResponseBody
-	public Object createTest(@ModelAttribute User user, @RequestBody TestPms testPms) {
+	public Object createTest(@RequestBody TestPms testPms) {
+		User user = this.setUser(testPms.getUserId());
 		String samplingUrl = config.getControllerProperties().getProperty("controller.samp_url");
 		String redisHost = config.getControllerProperties().getProperty("controller.redisHost", null);
 		String redisPort = config.getControllerProperties().getProperty("controller.redisPort", null);
@@ -142,7 +142,8 @@ public class FeatureTestController extends BaseController {
 
 	@RequestMapping(value = "/validScript", method = RequestMethod.POST)
 	@ResponseBody
-	public Object validScript(@ModelAttribute User user, @RequestBody TestPms testPms) {
+	public Object validScript(@RequestBody TestPms testPms) {
+		User user = this.setUser(testPms.getUserId());
 		String samplingUrl = null;
 		String redisHost = config.getControllerProperties().getProperty("controller.redisHost", null);
 		String redisPort = config.getControllerProperties().getProperty("controller.redisPort", null);
@@ -209,7 +210,8 @@ public class FeatureTestController extends BaseController {
 	 */
 	@RequestMapping(value = "/uploadData", method = RequestMethod.POST)
 	@ResponseBody
-	public String uploadData(@ModelAttribute User user, @RequestParam("uploadFile") MultipartFile file, String oldPath) {
+	public String uploadData(String userId, @RequestParam("uploadFile") MultipartFile file, String oldPath) {
+		User user = this.setUser(userId);
 		Map<String, Object> result = new HashMap<>();
 		result.put("code", 0);
 
@@ -244,7 +246,8 @@ public class FeatureTestController extends BaseController {
 
 	@RequestMapping(value = "/deleteScript", method = RequestMethod.GET)
 	@ResponseBody
-	public Object deleteScript(@ModelAttribute User user, long id, String path) {
+	public Object deleteScript(String userId, long id, String path) {
+		User user = this.setUser(userId);
 		Map<String, Object> result = new HashMap<>();
 		result.put("code", 0);
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();

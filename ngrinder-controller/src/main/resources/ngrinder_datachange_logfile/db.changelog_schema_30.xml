@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="ngrinder.3.3.1" id="30" dbms="mysql">
+		<validCheckSum/>
+		<comment>change scences table.</comment>
+		<sql>
+			alter table test_pms add column user_id varchar(255) default null comment '创建者id';
+		</sql>
+	</changeSet>
+</databaseChangeLog>

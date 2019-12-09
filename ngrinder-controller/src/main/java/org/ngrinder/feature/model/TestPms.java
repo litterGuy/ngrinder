@@ -29,6 +29,15 @@ public class TestPms {
 	private int samplingInterval;//采样间隔
 	private String param;//测试参数,测试脚本可以在命令行里获取参数，目前未实现'
 	private Date scheduledTime;//定时时间，不在scenes表中
+	private String userId;//创建者id
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 	public Date getScheduledTime() {
 		return scheduledTime;
