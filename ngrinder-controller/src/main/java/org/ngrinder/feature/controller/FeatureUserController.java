@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -44,6 +46,8 @@ public class FeatureUserController {
 	private ShaPasswordEncoder passwordEncoder;
 	@Autowired
 	private PerfTestService perfTestService;
+	@Autowired
+	private AgentManagerService agentManagerService;
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
@@ -94,6 +98,20 @@ public class FeatureUserController {
 		}
 		Map<String, Object> result = new HashMap<>();
 		result.put("code", 0);
+		return gson.toJson(result);
+	}
+
+	@RequestMapping(value = "agentList", method = RequestMethod.GET)
+	@ResponseBody
+	public Object agentList(String ip, int page, int limit) {
+		PageRequest pageRequest = new PageRequest(page, limit, new Sort(Sort.Direction.DESC, "id"));
+		final Page<AgentInfo> testList = agentManagerService.getPagedAll(ip, pageRequest);
+		Map<String, Object> result = new HashMap<>();
+		result.put("code", 0);
+		Map<String, Object> tmp = new HashMap<>();
+		tmp.put("total", testList.getTotalElements());
+		tmp.put("list", testList.getContent());
+		result.put("data", tmp);
 		return gson.toJson(result);
 	}
 

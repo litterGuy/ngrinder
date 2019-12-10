@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,20 +9,15 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.agent.repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import net.grinder.message.console.AgentControllerState;
-
 import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
+
+import javax.persistence.criteria.*;
 
 /**
  * Agent Manager JPA Specification.
@@ -32,6 +27,16 @@ import org.springframework.data.jpa.domain.Specification;
  * @since 3.1
  */
 public abstract class AgentManagerSpecification {
+
+	public static Specification<AgentInfo> hasIp(final String ip) {
+		return new Specification<AgentInfo>() {
+			@Override
+			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				String queryStr = (ip + "%").toLowerCase();
+				return cb.like(cb.lower(root.get("ip").as(String.class)), queryStr);
+			}
+		};
+	}
 
 	/**
 	 * Query specification to query the agent existing in the specified region.
@@ -45,7 +50,7 @@ public abstract class AgentManagerSpecification {
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				Expression<String> regionField = root.get("region").as(String.class);
 				return cb.or(cb.like(regionField, region + "/_owned%", cb.literal('/')), cb.equal(regionField,
-						region));
+					region));
 			}
 		};
 	}
@@ -61,8 +66,8 @@ public abstract class AgentManagerSpecification {
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				Expression<AgentControllerState> status = root.get("state").as(AgentControllerState.class);
 				return cb.and(cb.notEqual(status, AgentControllerState.INACTIVE),
-						cb.notEqual(status, AgentControllerState.UNKNOWN),
-						cb.notEqual(status, AgentControllerState.WRONG_REGION));
+					cb.notEqual(status, AgentControllerState.UNKNOWN),
+					cb.notEqual(status, AgentControllerState.WRONG_REGION));
 			}
 		};
 	}
@@ -82,7 +87,7 @@ public abstract class AgentManagerSpecification {
 			}
 		};
 	}
-	
+
 	/**
 	 * Query specification to query the ready agents.
 	 * (state in READY,FINISHED,STARTED)
@@ -93,12 +98,12 @@ public abstract class AgentManagerSpecification {
 		return new Specification<AgentInfo>() {
 			@Override
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query,
-				CriteriaBuilder cb) {
+										 CriteriaBuilder cb) {
 				Expression<AgentControllerState> status = root.get("state").as(
 					AgentControllerState.class);
 				return cb.and(cb.equal(status, AgentControllerState.READY));
 			}
 		};
 	}
-	
+
 }
