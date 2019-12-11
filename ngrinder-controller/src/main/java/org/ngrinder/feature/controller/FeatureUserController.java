@@ -4,11 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.common.constant.ControllerConstants;
+import org.ngrinder.common.constant.WebConstants;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.RampUp;
 import org.ngrinder.model.User;
+import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.region.service.RegionService;
 import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
@@ -22,12 +29,14 @@ import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * 登陆接口，提供给中间件使用
@@ -48,6 +57,13 @@ public class FeatureUserController {
 	private PerfTestService perfTestService;
 	@Autowired
 	private AgentManagerService agentManagerService;
+	@Autowired
+	private RegionService regionService;
+	@Autowired
+	private AgentManager agentManager;
+	@Autowired
+	private Config config;
+
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
@@ -113,6 +129,43 @@ public class FeatureUserController {
 		tmp.put("list", testList.getContent());
 		result.put("data", tmp);
 		return gson.toJson(result);
+	}
+
+
+	@RequestMapping(value = "agentConfig", method = RequestMethod.GET)
+	@ResponseBody
+	public Object agentConfig(String userId) {
+		User user = this.setUser(userId);
+		ModelMap model = new ModelMap();
+		Map<String, MutableInt> agentCountMap = agentManagerService.getAvailableAgentCountMap(user);
+		model.addAttribute(WebConstants.PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+		model.addAttribute(WebConstants.PARAM_REGION_LIST, regionService.getAllVisibleRegionNames());
+		model.addAttribute(WebConstants.PARAM_PROCESS_THREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
+		addDefaultAttributeOnModel(model);
+		String timeZone = user.getTimeZone();
+		int offset;
+		if (StringUtils.isNotBlank(timeZone)) {
+			offset = TimeZone.getTimeZone(timeZone).getOffset(System.currentTimeMillis());
+		} else {
+			offset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
+		}
+		model.addAttribute(WebConstants.PARAM_TIMEZONE_OFFSET, offset);
+		Map<String, Object> result = new HashMap<>();
+		result.put("code", 0);
+		result.put("data", model);
+		return result;
+	}
+
+	private void addDefaultAttributeOnModel(ModelMap model) {
+		model.addAttribute(WebConstants.PARAM_AVAILABLE_RAMP_UP_TYPE, RampUp.values());
+		model.addAttribute(WebConstants.PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
+		model.addAttribute(WebConstants.PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+		if (config.isSecurityEnabled()) {
+			model.addAttribute(WebConstants.PARAM_SECURITY_LEVEL, config.getSecurityLevel());
+		}
+		model.addAttribute(WebConstants.PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
+		model.addAttribute(WebConstants.PARAM_SAFE_FILE_DISTRIBUTION,
+			config.getControllerProperties().getPropertyBoolean(ControllerConstants.PROP_CONTROLLER_SAFE_DIST));
 	}
 
 	private User setUser(String userId) {
