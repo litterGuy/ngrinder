@@ -2,6 +2,7 @@ package org.ngrinder.feature.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
@@ -109,7 +110,7 @@ public class FeatureTestController extends BaseController {
 			entry.setProperties(buildMap("targetHosts", testPms.getTargetHosts()));
 		}
 		//如果存在数据源文件，增加到脚本svn文件属性中
-		if (testPms.getFileDataList().size() > 0) {
+		if (CollectionUtils.isNotEmpty(testPms.getFileDataList())) {
 			StringBuilder sb = new StringBuilder();
 			for (FileData fileData : testPms.getFileDataList()) {
 				sb.append(fileData.getPath());
@@ -288,6 +289,9 @@ public class FeatureTestController extends BaseController {
 
 	private List<String> getFileDataStrList(TestPms testPms) {
 		List<String> list = new ArrayList<>();
+		if(testPms.getFileDataList() == null){
+			return list;
+		}
 		Gson gson = new Gson();
 		for (int i = 0; i < testPms.getFileDataList().size(); i++) {
 			list.add(gson.toJson(testPms.getFileDataList().get(i)));
