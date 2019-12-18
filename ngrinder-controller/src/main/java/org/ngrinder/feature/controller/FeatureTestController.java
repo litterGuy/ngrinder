@@ -157,7 +157,7 @@ public class FeatureTestController extends BaseController {
 		String scriptType = "groovy";
 		String fileName = "TestRunner.groovy";//暂时定为groovy，后续如果增加python脚本再做修改
 		String name = testPms.getName();
-		String path = testPms.getId().toString();//scenesId做中间路径
+		String path = testPms.getId() == null ? "0" : testPms.getId().toString();//scenesId做中间路径
 		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(scriptType);
 		FileEntry entry = new FileEntry();
 		entry.setPath(fileName);
