@@ -176,7 +176,7 @@ class TestRunner {
 	public static void afterProcess(){
 		<#if samplingUrl??>
 		//取样收集，采集10%
-		int size = processList.size() / 10 > 0 ? processList.size() / 10 : 1
+		int size = processList.size().intdiv(10) > 0 ? processList.size().intdiv(10) : 1
 		List<ConcurrentMap<String, Object>> tmpList = new ArrayList<>()
 		for(int i=0;i< processList.size();i++){
 			reservoirSampling(tmpList, processList.get(i),size)

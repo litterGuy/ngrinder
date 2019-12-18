@@ -73,4 +73,12 @@ class justTest {
         }
     }
 
+    @Test
+    public void sampleTest(){
+        println 1.intdiv(10)
+        int size = 1.intdiv(10) > 0 ? 1 / 10 : 1
+        Random random = new Random();
+        int i = random.nextInt(size);
+        println i
+    }
 }
