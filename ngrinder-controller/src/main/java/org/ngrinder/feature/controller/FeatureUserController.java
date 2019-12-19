@@ -13,6 +13,7 @@ import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.RampUp;
 import org.ngrinder.model.User;
+import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.region.service.RegionService;
@@ -63,6 +64,8 @@ public class FeatureUserController {
 	private AgentManager agentManager;
 	@Autowired
 	private Config config;
+	@Autowired
+	private AnnouncementService announcementService;
 
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
@@ -154,6 +157,16 @@ public class FeatureUserController {
 		result.put("code", 0);
 		result.put("data", model);
 		return result;
+	}
+
+	@RequestMapping(value = "announcement", method = RequestMethod.GET)
+	@ResponseBody
+	public Object announcement() {
+		String announcement = announcementService.getOne();
+		Map<String, Object> result = new HashMap<>();
+		result.put("code", 0);
+		result.put("data", announcement);
+		return gson.toJson(result);
 	}
 
 	private void addDefaultAttributeOnModel(ModelMap model) {
