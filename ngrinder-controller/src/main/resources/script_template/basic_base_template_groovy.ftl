@@ -24,6 +24,10 @@ public void ${reqPms.funName}(){
 		jedis.expire(VUSERNUM_KEY,60*60)
 		</#if>
 	<#else>
+		//设置超时时间
+		<#if req.timeout ??>
+			HTTPPluginControl.getConnectionDefaults().timeout = ${req.timeout}
+		</#if>
 		//设置header
 		NVPair[] headers = []
     	<#if reqPms.headerList?? && reqPms.headerList?size != 0>
