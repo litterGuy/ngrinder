@@ -246,10 +246,11 @@ public void ${reqPms.funName}(){
 			</#list>
 		</#if>
 
-		if (result.statusCode == 301 || result.statusCode == 302) {
+		if("${statusCode}".contains(result.statusCode+",")){
+			assertTrue(true)
+		}else{
 			grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode);
-		} else {
-			assertThat(result.statusCode, is(200));
+			assertTrue(false)
 		}
     </#if>
 

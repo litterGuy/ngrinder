@@ -1,7 +1,6 @@
 package org.ngrinder.feature.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
@@ -93,6 +92,15 @@ public class FeatureTestController extends BaseController {
 		redisMap.put("redisHost", redisHost);
 		redisMap.put("redisPort", redisPort);
 		redisMap.put("redisPassword", redisPassword);
+		//如果status code不为空，传递参数
+		String code = "200,";
+		if (StringUtils.isNotEmpty(testPms.getStatusCode())) {
+			code += testPms.getStatusCode();
+			if (!testPms.getStatusCode().endsWith(",")) {
+				code += ",";
+			}
+			redisMap.put("statusCode", code);
+		}
 
 		//1、获取参数，生成脚本
 		String scriptType = "groovy";
@@ -152,7 +160,15 @@ public class FeatureTestController extends BaseController {
 		redisMap.put("redisHost", redisHost);
 		redisMap.put("redisPort", redisPort);
 		redisMap.put("redisPassword", redisPassword);
-
+		//如果status code不为空，传递参数
+		String code = "200,";
+		if (StringUtils.isNotEmpty(testPms.getStatusCode())) {
+			code += testPms.getStatusCode();
+			if (!testPms.getStatusCode().endsWith(",")) {
+				code += ",";
+			}
+			redisMap.put("statusCode", code);
+		}
 		//1、获取参数，生成脚本
 		String scriptType = "groovy";
 		String fileName = "TestRunner.groovy";//暂时定为groovy，后续如果增加python脚本再做修改

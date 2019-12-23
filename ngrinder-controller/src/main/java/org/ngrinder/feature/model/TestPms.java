@@ -30,6 +30,15 @@ public class TestPms {
 	private String param;//测试参数,测试脚本可以在命令行里获取参数，目前未实现'
 	private Date scheduledTime;//定时时间，不在scenes表中
 	private String userId;//创建者id
+	private String statusCode;//成功状态码,以分号分隔
+
+	public String getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(String statusCode) {
+		this.statusCode = statusCode;
+	}
 
 	public String getUserId() {
 		return userId;
