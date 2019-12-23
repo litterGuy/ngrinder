@@ -25,8 +25,8 @@ public void ${reqPms.funName}(){
 		</#if>
 	<#else>
 		//设置超时时间
-		<#if req.timeout ??>
-			HTTPPluginControl.getConnectionDefaults().timeout = ${req.timeout}
+		<#if reqPms.timeout gt 0 >
+			HTTPPluginControl.getConnectionDefaults().timeout = ${reqPms.timeout?c}
 		</#if>
 		//设置header
 		NVPair[] headers = []
