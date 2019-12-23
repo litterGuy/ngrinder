@@ -1,13 +1,12 @@
 package org.ngrinder.feature.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constant.WebConstants;
+import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
@@ -45,10 +44,8 @@ import java.util.TimeZone;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 @Controller
 @RequestMapping("/feature/user")
-public class FeatureUserController {
+public class FeatureUserController extends BaseController {
 	private static final Logger LOG = LoggerFactory.getLogger(FeatureUserController.class);
-
-	private Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 
 	@Autowired
 	private UserService userService;
@@ -76,21 +73,21 @@ public class FeatureUserController {
 		if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(password)) {
 			result.put("code", 1);
 			result.put("errMsg", "userId or password can not be empty");
-			return gson.toJson(result);
+			return toJsonHttpEntity(result);
 		}
 		User tmp = userService.getOne(userId);
 		if (tmp == null) {
 			result.put("code", 1);
 			result.put("errMsg", "userId is error and can`t find user");
-			return gson.toJson(result);
+			return toJsonHttpEntity(result);
 		}
 		if (!passwordEncoder.isPasswordValid(tmp.getPassword(), password, userId)) {
 			result.put("code", 1);
 			result.put("errMsg", "password is not right");
-			return gson.toJson(result);
+			return toJsonHttpEntity(result);
 		}
 		result.put("data", tmp);
-		return gson.toJson(result);
+		return toJsonHttpEntity(result);
 	}
 
 	@RequestMapping(value = "perfList", method = RequestMethod.GET)
@@ -105,7 +102,7 @@ public class FeatureUserController {
 		tmp.put("total", testList.getTotalElements());
 		tmp.put("list", testList.getContent());
 		result.put("data", tmp);
-		return gson.toJson(result);
+		return toJsonHttpEntity(result);
 	}
 
 	@RequestMapping(value = "perfDelete", method = RequestMethod.GET)
@@ -117,7 +114,7 @@ public class FeatureUserController {
 		}
 		Map<String, Object> result = new HashMap<>();
 		result.put("code", 0);
-		return gson.toJson(result);
+		return toJsonHttpEntity(result);
 	}
 
 	@RequestMapping(value = "agentList", method = RequestMethod.GET)
@@ -131,7 +128,7 @@ public class FeatureUserController {
 		tmp.put("total", testList.getTotalElements());
 		tmp.put("list", testList.getContent());
 		result.put("data", tmp);
-		return gson.toJson(result);
+		return toJsonHttpEntity(result);
 	}
 
 
@@ -161,12 +158,12 @@ public class FeatureUserController {
 
 	@RequestMapping(value = "announcement", method = RequestMethod.GET)
 	@ResponseBody
-	public Object announcement() {
+	public Object getAnnouncement() {
 		String announcement = announcementService.getOne();
 		Map<String, Object> result = new HashMap<>();
 		result.put("code", 0);
 		result.put("data", announcement);
-		return gson.toJson(result);
+		return toJsonHttpEntity(result);
 	}
 
 	private void addDefaultAttributeOnModel(ModelMap model) {

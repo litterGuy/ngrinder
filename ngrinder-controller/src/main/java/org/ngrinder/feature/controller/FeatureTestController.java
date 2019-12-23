@@ -137,8 +137,7 @@ public class FeatureTestController extends BaseController {
 		if (perfTest.getId() == null || perfTest.getId() <= 0) {
 			result.put("code", 1);
 		}
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-		return gson.toJson(result);
+		return toJsonHttpEntity(result);
 	}
 
 	@RequestMapping(value = "/validScript", method = RequestMethod.POST)
@@ -211,7 +210,7 @@ public class FeatureTestController extends BaseController {
 	 */
 	@RequestMapping(value = "/uploadData", method = RequestMethod.POST)
 	@ResponseBody
-	public String uploadData(String userId, @RequestParam("uploadFile") MultipartFile file, String oldPath) {
+	public Object uploadData(String userId, @RequestParam("uploadFile") MultipartFile file, String oldPath) {
 		User user = this.setUser(userId);
 		Map<String, Object> result = new HashMap<>();
 		result.put("code", 0);
@@ -241,8 +240,7 @@ public class FeatureTestController extends BaseController {
 			result.put("code", "1");
 			result.put("errMsg", e.getMessage());
 		}
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-		return gson.toJson(result);
+		return toJsonHttpEntity(result);
 	}
 
 	@RequestMapping(value = "/deleteScript", method = RequestMethod.GET)
@@ -251,11 +249,10 @@ public class FeatureTestController extends BaseController {
 		User user = this.setUser(userId);
 		Map<String, Object> result = new HashMap<>();
 		result.put("code", 0);
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 		if (id <= 0) {
 			result.put("code", 1);
 			result.put("errMsg", "id can not empty");
-			return gson.toJson(result);
+			return toJsonHttpEntity(result);
 		}
 		//删除脚本，删除resources资源
 		if (fileEntryService.hasFileEntry(user, id + "")) {
@@ -281,15 +278,15 @@ public class FeatureTestController extends BaseController {
 				LOG.error(e.getMessage());
 				result.put("code", 1);
 				result.put("errMsg", e.getMessage());
-				return gson.toJson(result);
+				return toJsonHttpEntity(result);
 			}
 		}
-		return gson.toJson(result);
+		return toJsonHttpEntity(result);
 	}
 
 	private List<String> getFileDataStrList(TestPms testPms) {
 		List<String> list = new ArrayList<>();
-		if(testPms.getFileDataList() == null){
+		if (testPms.getFileDataList() == null) {
 			return list;
 		}
 		Gson gson = new Gson();
