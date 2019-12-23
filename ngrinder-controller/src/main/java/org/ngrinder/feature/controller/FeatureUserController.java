@@ -159,7 +159,7 @@ public class FeatureUserController {
 		return result;
 	}
 
-	@RequestMapping(value = "announcement", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "announcement", method = RequestMethod.GET)
 	@ResponseBody
 	public Object announcement() {
 		String announcement = announcementService.getOne();
