@@ -206,18 +206,6 @@ public class FeatureTestController extends BaseController {
 		return toJsonHttpEntity(scriptValidationService.validate(user, entry, false, null));
 	}
 
-	/**
-	 * 跳往新建脚本ui界面
-	 * TODO
-	 *
-	 * @return
-	 */
-	@RequestMapping(value = "/createScript", method = RequestMethod.GET)
-	public String createScript() {
-
-		return "feature/create";
-	}
-
 
 	/**
 	 * 上传数据文件

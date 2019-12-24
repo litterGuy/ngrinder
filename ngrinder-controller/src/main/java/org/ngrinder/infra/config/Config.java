@@ -732,6 +732,10 @@ public class Config extends AbstractConfig implements ControllerConstants, Clust
 		return getControllerProperties().getProperty(PROP_CONTROLLER_HELP_URL);
 	}
 
+	public String getScenesUrl() {
+		return getControllerProperties().getProperty(PROP_CONTROLLER_SCENES_URL);
+	}
+
 	public PropertiesWrapper getClusterProperties() {
 		return clusterProperties;
 	}

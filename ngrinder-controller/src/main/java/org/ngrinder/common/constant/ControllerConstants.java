@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.constant;
 
@@ -85,4 +85,5 @@ public interface ControllerConstants {
 	public static final String PROP_CONTROLLER_INACTIVE_CLIENT_TIME_OUT = "controller.inactive_client_time_out";
 	public static final String PROP_CONTROLLER_ENABLE_STATISTICS = "controller.enable_statistics";
 	public static final String PROP_CONTROLLER_CSV_SEPARATOR = "controller.csv_separator";
+	public static final String PROP_CONTROLLER_SCENES_URL = "controller.scenes.url";
 }
