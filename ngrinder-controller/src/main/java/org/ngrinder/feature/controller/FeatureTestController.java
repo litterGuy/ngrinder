@@ -99,9 +99,8 @@ public class FeatureTestController extends BaseController {
 			if (!testPms.getStatusCode().endsWith(",")) {
 				code += ",";
 			}
-			redisMap.put("statusCode", code);
 		}
-
+		redisMap.put("statusCode", code);
 		//1、获取参数，生成脚本
 		String scriptType = "groovy";
 		String fileName = "TestRunner.groovy";//暂时定为groovy，后续如果增加python脚本再做修改
@@ -167,8 +166,8 @@ public class FeatureTestController extends BaseController {
 			if (!testPms.getStatusCode().endsWith(",")) {
 				code += ",";
 			}
-			redisMap.put("statusCode", code);
 		}
+		redisMap.put("statusCode", code);
 		//1、获取参数，生成脚本
 		String scriptType = "groovy";
 		String fileName = "TestRunner.groovy";//暂时定为groovy，后续如果增加python脚本再做修改
