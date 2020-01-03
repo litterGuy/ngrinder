@@ -154,9 +154,6 @@ class TestRunner {
 				</#if>
             </#list>
         </#if>
-		samplingMap.put("pftestId", grinder.getProperties().get("grinder.test.id").toString())
-		samplingMap.put("sampling", samplingList)
-		processList.add(samplingMap)
 	}
 
 	//循环进行请求生成
@@ -169,7 +166,9 @@ class TestRunner {
 
 	@AfterThread
 	public void afterThread(){
-
+		samplingMap.put("pftestId", grinder.getProperties().get("grinder.test.id").toString())
+		samplingMap.put("sampling", samplingList)
+		processList.add(samplingMap)
 	}
 
 	@AfterProcess
