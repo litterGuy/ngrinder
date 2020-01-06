@@ -132,7 +132,7 @@ public void ${reqPms.funName}(){
 				<#if outParams.source == 0>
 		//body text
 		def matchers = 	result.data =~ 	/${outParams.resolveExpress }/
-		if(matchers!=null && matchers.length>0 && matches.length >= ${outParams.index }){
+		if(matchers!=null && matchers.size()>0 && matchers.size() >= ${outParams.index }){
 			map.put("${outParams.name }",matchers[${outParams.index }]);
 		}
 
