@@ -91,11 +91,13 @@ public class FeatureUserController extends BaseController {
 			result.put("errMsg", "userId or userName can not be empty");
 			return toJsonHttpEntity(result);
 		}
+		User defaultUser = this.setUser("admin");
 		User user = new User();
 		user.setUserId(userId);
 		user.setUserName(userName);
 		user.setRole(Role.USER);
 		user.setPassword("123456");
+		user.setFollower(defaultUser);
 		if (StringUtils.isBlank(user.getPassword())) {
 			userService.saveWithoutPasswordEncoding(user);
 		} else {
