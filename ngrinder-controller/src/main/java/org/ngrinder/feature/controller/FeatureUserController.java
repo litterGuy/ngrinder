@@ -8,10 +8,7 @@ import org.ngrinder.common.constant.ControllerConstants;
 import org.ngrinder.common.constant.WebConstants;
 import org.ngrinder.common.controller.BaseController;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.AgentInfo;
-import org.ngrinder.model.PerfTest;
-import org.ngrinder.model.RampUp;
-import org.ngrinder.model.User;
+import org.ngrinder.model.*;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -64,6 +61,49 @@ public class FeatureUserController extends BaseController {
 	@Autowired
 	private AnnouncementService announcementService;
 
+	@RequestMapping(value = "getUserByUserId", method = RequestMethod.GET)
+	@ResponseBody
+	public Object getUserByUserId(String userId) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("code", 0);
+		if (StringUtils.isEmpty(userId)) {
+			result.put("code", 1);
+			result.put("errMsg", "userId can not be empty");
+			return toJsonHttpEntity(result);
+		}
+		User tmp = userService.getOne(userId);
+		if (tmp == null) {
+			result.put("code", 2);
+			result.put("errMsg", "userId is error and can`t find user");
+			return toJsonHttpEntity(result);
+		}
+		result.put("data", tmp);
+		return toJsonHttpEntity(result);
+	}
+
+	@RequestMapping(value = "dingTalkSave", method = RequestMethod.POST)
+	@ResponseBody
+	public Object dingTalkSave(String userId, String userName) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("code", 0);
+		if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(userName)) {
+			result.put("code", 1);
+			result.put("errMsg", "userId or userName can not be empty");
+			return toJsonHttpEntity(result);
+		}
+		User user = new User();
+		user.setUserId(userId);
+		user.setUserName(userName);
+		user.setRole(Role.USER);
+		user.setPassword("123456");
+		if (StringUtils.isBlank(user.getPassword())) {
+			userService.saveWithoutPasswordEncoding(user);
+		} else {
+			userService.save(user);
+		}
+		result.put("data", user);
+		return toJsonHttpEntity(result);
+	}
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	@ResponseBody
