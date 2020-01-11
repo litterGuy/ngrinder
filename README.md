@@ -1,7 +1,7 @@
 
 本项目作为基础项目被调用，与ngrinder-sampling共同组成完成的压测项目。
 
-项目的说明、安装使用文档等，请移步到ngrinder-sampling查看。
+项目的说明、安装使用文档等，请移步到ngrinder-sampling https://github.com/litterGuy/ngrinder-sampling 查看。
 
 --------
 
